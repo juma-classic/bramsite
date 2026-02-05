@@ -90,7 +90,7 @@ export const useLiveTickData = (market: string, enabled: boolean = true) => {
     useEffect(() => {
         if (!enabled) return;
 
-        const connection = new DerivAPIBasic({ app_id: 1089 });
+        const connection = new DerivAPIBasic({ app_id: 80836 });
         let subscriptionId: string | null = null;
 
         const connectAndSubscribe = async () => {

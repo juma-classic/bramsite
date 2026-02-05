@@ -335,11 +335,11 @@ export class DerivTradingAPI {
             }
 
             // Final fallback
-            console.log('ℹ️ Using default App ID: 82255');
-            return '82255';
+            console.log('ℹ️ Using default App ID: 80836');
+            return '80836';
         } catch (error) {
             console.error('Error getting app ID:', error);
-            return '82255';
+            return '80836';
         }
     }
 

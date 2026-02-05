@@ -10,7 +10,7 @@ The Speed Bot is stuck on "Connecting..." and not establishing a proper WebSocke
 
 ### Speed Bot Connection (Current - Not Working)
 
--   **Endpoint**: `wss://ws.derivws.com/websockets/v3?app_id=121055`
+-   **Endpoint**: `wss://ws.derivws.com/websockets/v3?app_id=80836`
 -   **Authentication**: None (public data access)
 -   **Message Handling**: Basic ping/pong only
 -   **Error Handling**: Limited
@@ -18,7 +18,7 @@ The Speed Bot is stuck on "Connecting..." and not establishing a proper WebSocke
 
 ### Zen Tool Connection (Working)
 
--   **Endpoint**: `wss://ws.derivws.com/websockets/v3?app_id=121055`
+-   **Endpoint**: `wss://ws.derivws.com/websockets/v3?app_id=80836`
 -   **Authentication**: API token required for account access
 -   **Message Handling**: Comprehensive message routing by `msg_type`
 -   **Error Handling**: Robust error handling and recovery
@@ -128,14 +128,14 @@ if (data.error) {
 
 Look for these messages:
 
--   `✅ Connected to Deriv API with App ID: 82255`
+-   `✅ Connected to Deriv API with App ID: 80836`
 -   `📡 Received message:` (should show actual API responses)
 -   Any error messages
 
 ### 2. Test WebSocket Directly
 
 ```javascript
-const ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=121055');
+const ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=80836');
 ws.onopen = () => console.log('Connected');
 ws.onmessage = e => console.log('Message:', JSON.parse(e.data));
 ws.send(JSON.stringify({ ping: 1 }));
@@ -170,7 +170,7 @@ ws.send(JSON.stringify({ ping: 1 }));
 
 ### Connection Flow:
 
-1. **Connect**: WebSocket opens to `wss://ws.derivws.com/websockets/v3?app_id=121055`
+1. **Connect**: WebSocket opens to `wss://ws.derivws.com/websockets/v3?app_id=80836`
 2. **Ping**: Send `{"ping": 1}` to test connection
 3. **Pong**: Receive `{"msg_type": "pong", "pong": 1}` response
 4. **Connected**: Update UI to show connected state

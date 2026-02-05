@@ -68,7 +68,7 @@
   ```
 
 ### ✅ 8. Production Configuration - IMPLEMENTED
-- **App ID**: Configured to use 82255 for production trading
+- **App ID**: Configured to use 80836 for production trading
 - **Error Handling**: Comprehensive validation and error reporting
 - **Logging**: Detailed console logging for debugging
 - **Notifications**: Real-time user feedback
@@ -79,7 +79,7 @@
 - Single source of truth for bot operations
 - Unified parameter management
 - Direct XML injection with validation
-- App ID configuration (82255)
+- App ID configuration (80836)
 - Auto-start functionality
 
 ### 2. EnhancedSignalProcessorService
@@ -123,7 +123,7 @@
 ### Integration Tests
 - [ ] Button behavior (no downloads, direct injection)
 - [ ] Tab switching to Bot Builder
-- [ ] App ID configuration (82255)
+- [ ] App ID configuration (80836)
 - [ ] Real-time notifications
 
 ## 🎯 FINAL DELIVERABLES
@@ -149,7 +149,7 @@
 - Comprehensive error handling
 
 ### ✅ Production Readiness
-- App ID 82255 configured
+- App ID 80836 configured
 - Comprehensive validation
 - Real-time error reporting
 - Automated testing support
