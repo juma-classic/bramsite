@@ -21,7 +21,7 @@ module.exports = {
         gapi: 'readonly',
         __webpack_public_path__: 'readonly',
     },
-    extends: ['eslint:recommended', 'plugin:react/recommended', '@typescript-eslint/recommended'],
+    extends: ['eslint:recommended', 'plugin:react/recommended', 'plugin:@typescript-eslint/recommended'],
     plugins: ['react', 'react-hooks', 'simple-import-sort', '@typescript-eslint'],
     rules: {
         'simple-import-sort/imports': 'warn',

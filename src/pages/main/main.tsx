@@ -2,26 +2,26 @@ import React, { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import AnalysisTool from '@/components/analysis-tool/AnalysisTool';
+import { ProtectedPatelSignalCenter } from '@/components/auth/ProtectedPatelSignalCenter';
+import { ProtectedPatelSignals } from '@/components/auth/ProtectedPatelSignals';
 import ChunkLoader from '@/components/loader/chunk-loader';
 import DesktopWrapper from '@/components/shared_ui/desktop-wrapper';
 import Dialog from '@/components/shared_ui/dialog';
 import MobileWrapper from '@/components/shared_ui/mobile-wrapper';
 import Tabs from '@/components/shared_ui/tabs/tabs';
-import { ProtectedSignalsCenter } from '@/components/signals/ProtectedSignalsCenter';
-import { ProtectedPatelSignals } from '@/components/auth/ProtectedPatelSignals';
-import { PatelSignalCenter } from '@/components/signals/PatelSignalCenter';
-import { ProtectedPatelSignalCenter } from '@/components/auth/ProtectedPatelSignalCenter';
 import PatelPrime from '@/components/signals/PatelPrime';
+import { PatelSignalCenter } from '@/components/signals/PatelSignalCenter';
+import { ProtectedSignalsCenter } from '@/components/signals/ProtectedSignalsCenter';
 import TradingViewModal from '@/components/trading-view-chart/trading-view-modal';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { api_base, updateWorkspaceName } from '@/external/bot-skeleton';
 import { CONNECTION_STATUS } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
+import { setupAPIErrorMonitoring } from '@/utils/api-error-handler';
+import { BotLoadingErrorHandler, withBotLoadingErrorHandling } from '@/utils/bot-loading-error-handler';
 import { Localize, localize } from '@deriv-com/translations';
 import { useDevice } from '@deriv-com/ui';
-import { BotLoadingErrorHandler, withBotLoadingErrorHandling } from '@/utils/bot-loading-error-handler';
-import { setupAPIErrorMonitoring } from '@/utils/api-error-handler';
 import RunPanel from '../../components/run-panel';
 import ChartModal from '../chart/chart-modal';
 import Dashboard from '../dashboard';
@@ -30,7 +30,7 @@ import RunStrategy from '../dashboard/run-strategy';
 const Chart = lazy(() => import('../chart'));
 const Tutorial = lazy(() => import('../tutorials'));
 const AdvancedAlgo = lazy(() => import('../advanced-algo'));
-const DAnalysis = lazy(() => import('../danalysis'));
+const DAnalysis = lazy(() => import('@/components/analysis-tool/AnalysisTool')); // Using AnalysisTool as DAnalysis
 const XDtrader = lazy(() => import('../xdtrader'));
 
 const DashboardIcon = () => (
@@ -164,10 +164,6 @@ const FreeBotsIcon = () => (
     </svg>
 );
 
-
-
-
-
 const RichMotherIcon = () => (
     <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
         {/* Diamond shape */}
@@ -197,16 +193,12 @@ const RichMotherIcon = () => (
     </svg>
 );
 
-
-
-
-
 const DAnalysisIcon = () => (
     <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
         {/* Background circle */}
         <circle cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='1.5' fill='none' opacity='0.3' />
         <circle cx='12' cy='12' r='10' fill='#6366f1' opacity='0.05' />
-        
+
         {/* Digit circles representing 0-9 */}
         <circle cx='12' cy='6' r='2' fill='#27ae60' />
         <circle cx='18' cy='9' r='2' fill='#3498db' />
@@ -215,11 +207,13 @@ const DAnalysisIcon = () => (
         <circle cx='9' cy='20' r='2' fill='#f39c12' />
         <circle cx='4' cy='15' r='2' fill='#95a5a6' />
         <circle cx='6' cy='9' r='2' fill='#95a5a6' />
-        
+
         {/* Center analysis symbol */}
         <circle cx='12' cy='12' r='3' fill='#6366f1' />
-        <text x='12' y='14' textAnchor='middle' fontSize='8' fill='#fff' fontWeight='bold'>DA</text>
-        
+        <text x='12' y='14' textAnchor='middle' fontSize='8' fill='#fff' fontWeight='bold'>
+            DA
+        </text>
+
         {/* Statistical lines */}
         <path d='M8 8L16 16M16 8L8 16' stroke='#6366f1' strokeWidth='1' opacity='0.4' />
     </svg>
@@ -230,29 +224,31 @@ const XDtraderIcon = () => (
         {/* Advanced trading chart background */}
         <rect x='2' y='4' width='20' height='16' rx='2' stroke='currentColor' strokeWidth='1.5' fill='none' />
         <rect x='2' y='4' width='20' height='16' rx='2' fill='#8b5cf6' opacity='0.05' />
-        
+
         {/* Chart grid */}
         <path d='M2 8h20M2 12h20M2 16h20' stroke='currentColor' strokeWidth='0.5' opacity='0.3' />
         <path d='M6 4v16M10 4v16M14 4v16M18 4v16' stroke='currentColor' strokeWidth='0.5' opacity='0.3' />
-        
+
         {/* Advanced candlesticks with different patterns */}
         <rect x='5' y='9' width='2' height='8' fill='#10b981' />
         <rect x='9' y='7' width='2' height='10' fill='#ef4444' />
         <rect x='13' y='11' width='2' height='6' fill='#10b981' />
         <rect x='17' y='5' width='2' height='12' fill='#ef4444' />
-        
+
         {/* Technical indicators */}
         <circle cx='6' cy='13' r='1' fill='#8b5cf6' />
         <circle cx='10' cy='12' r='1' fill='#8b5cf6' />
         <circle cx='14' cy='14' r='1' fill='#8b5cf6' />
         <circle cx='18' cy='11' r='1' fill='#8b5cf6' />
-        
+
         {/* Trend lines */}
         <path d='M4 16L8 12L12 14L16 8L20 10' stroke='#8b5cf6' strokeWidth='1.5' strokeLinecap='round' opacity='0.7' />
-        
+
         {/* xDtrader badge */}
         <rect x='15' y='2' width='7' height='3' rx='1' fill='#8b5cf6' />
-        <text x='18.5' y='4' textAnchor='middle' fontSize='5' fill='#fff' fontWeight='bold'>xDT</text>
+        <text x='18.5' y='4' textAnchor='middle' fontSize='5' fill='#fff' fontWeight='bold'>
+            xDT
+        </text>
     </svg>
 );
 
@@ -380,7 +376,7 @@ const AppWrapper = observer(() => {
                 'Game Changer AI (1).xml', // NEW: Game Changer AI bot
                 'Game Changer AI -  State FX.xml', // NEW: Game Changer AI - States FX version
                 'Random LDP Differ -  State FX.xml', // NEW: Random LDP Differ bot
-                
+
                 // CFX Series Bots
                 'CFX-025-Base.xml',
                 'CFX-025-Step1.xml',
@@ -391,7 +387,7 @@ const AppWrapper = observer(() => {
                 'CFX - 025.xml',
                 'CFX-EvenOdd.xml',
                 'CFX-RiseFall.xml',
-                
+
                 // Professional Trading Bots
                 'Digit-Hunter-Pro.xml',
                 'MatchesMaster.xml',
@@ -399,7 +395,7 @@ const AppWrapper = observer(() => {
                 'MarketMakerPro.xml',
                 'Deriv Killer -  State FX.xml',
                 'SpeedHunter.xml',
-                
+
                 // States FX Bot Collection
                 'States FX SpeedBot(With Entry).xml',
                 'Elvis SpeedBot(Risk-Based Martingale).xml',
@@ -409,14 +405,14 @@ const AppWrapper = observer(() => {
                 'Over_Under Ghost - by  State FX.xml',
                 'Over_Under Ghost v2 - by State FX.xml',
                 'Flipping-Tool-2026 -  State FX .xml',
-                
+
                 // Advanced Strategy Bots
                 'Dexterator AI .xml',
                 'Dexterator CFX Hit&Run by  State FX.xml',
                 'D6 Deriv by  State FX.xml',
                 'Even Odd Ghost V1 by  State FX.xml',
                 'updated CFX Auto-Bot by  State FX.xml',
-                
+
                 // Specialized Bots
                 'MATCHES (with Entry).xml',
                 'EVENODD Double loss Bot .xml',
@@ -426,7 +422,7 @@ const AppWrapper = observer(() => {
                 'noloss bot.xml',
                 'DIFF SMART BOT.xml',
                 'Digit Differ Split martingale Strategy[4nd July 2022].xml',
-                
+
                 // Premium & Special Bots
                 'AUTO C4 VOLT 🇬🇧 2 🇬🇧 AI PREMIUM ROBOT  (2) (1).xml',
                 '$Dollar printer .xml',
@@ -1062,7 +1058,6 @@ const AppWrapper = observer(() => {
                     predictionFields.forEach(field => {
                         const parentBlock = field.closest('block');
                         if (parentBlock) {
-                            const blockType = parentBlock.getAttribute('type');
                             const blockId = parentBlock.getAttribute('id');
 
                             // Look for prediction-related blocks
@@ -1709,8 +1704,6 @@ const AppWrapper = observer(() => {
                 evenOddType,
                 strategy,
                 stake,
-                martingale,
-                maxMartingaleSteps,
             } = eventData;
 
             console.log('⚪⚫ Received EVEN/ODD bot load request:', {
@@ -1892,7 +1885,7 @@ const AppWrapper = observer(() => {
         const handleUnifiedBotLoad = async (event: Event) => {
             const customEvent = event as CustomEvent;
             const { botName, xmlContent, parameters } = customEvent.detail;
-            
+
             console.log('🤖 Received unified bot load request:', { botName, parameters });
 
             try {
@@ -1937,7 +1930,6 @@ const AppWrapper = observer(() => {
                         console.error('❌ Failed to auto-start unified bot:', error);
                     }
                 }, 2000);
-
             } catch (error) {
                 console.error('❌ Failed to load unified bot:', error);
             }
@@ -2086,7 +2078,6 @@ const AppWrapper = observer(() => {
                             </Suspense>
                         </div>
 
-
                         {/* DANALYSIS TAB */}
                         <div
                             label={
@@ -2098,7 +2089,9 @@ const AppWrapper = observer(() => {
                             id='id-danalysis'
                         >
                             <div className='danalysis-container'>
-                                <Suspense fallback={<ChunkLoader message={localize('Please wait, loading DAnalysis...')} />}>
+                                <Suspense
+                                    fallback={<ChunkLoader message={localize('Please wait, loading DAnalysis...')} />}
+                                >
                                     <DAnalysis />
                                 </Suspense>
                             </div>
@@ -2115,7 +2108,9 @@ const AppWrapper = observer(() => {
                             id='id-xdtrader'
                         >
                             <div className='xdtrader-container'>
-                                <Suspense fallback={<ChunkLoader message={localize('Please wait, loading xDtrader...')} />}>
+                                <Suspense
+                                    fallback={<ChunkLoader message={localize('Please wait, loading xDtrader...')} />}
+                                >
                                     <XDtrader show_digits_stats={false} />
                                 </Suspense>
                             </div>
@@ -3011,14 +3006,6 @@ const AppWrapper = observer(() => {
                                 </style>
                             </div>
                         </div>
-
-
-
-
-
-
-
-
 
                         {/* RICH MOTHER TAB */}
                         <div

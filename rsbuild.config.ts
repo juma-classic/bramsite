@@ -14,7 +14,6 @@ export default defineConfig({
             exclude: /node_modules/,
         }),
         pluginReact(),
-        pluginBasicSsl(),
     ],
     performance: {
         chunkSplit: {
@@ -97,10 +96,10 @@ export default defineConfig({
         template: './index.html',
     },
     server: {
-        port: 8443,
+        port: 3000,
         compress: true,
         host: '0.0.0.0',
-        https: true,
+        https: false,
     },
     dev: {
         hmr: true,
@@ -150,11 +149,6 @@ export default defineConfig({
             },
             experiments: {
                 asyncWebAssembly: true,
-            },
-            devServer: {
-                client: {
-                    webSocketURL: 'auto://0.0.0.0:0/ws',
-                },
             },
         },
     },

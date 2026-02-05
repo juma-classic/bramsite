@@ -1,0 +1,134 @@
+.simple-analysis-tool {
+    height: 100%;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 1.5rem;
+
+    .tool-header {
+        background: linear-gradient(135deg, #7d1f3d 0%, #9f2a4f 100%);
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+        border-radius: 12px;
+        margin-bottom: 1.5rem;
+        color: #fff;
+
+        h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .market-selector {
+            select {
+                padding: 0.5rem 1rem;
+                border-radius: 6px;
+                border: 1px solid rgb(255 255 255 / 30%);
+                background: rgb(255 255 255 / 10%);
+                color: #fff;
+                font-weight: 600;
+                cursor: pointer;
+
+                option {
+                    background: #7d1f3d;
+                    color: #fff;
+                }
+            }
+        }
+    }
+
+    .tool-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        overflow-y: auto;
+        padding-bottom: 1.5rem;
+
+        .stat-card {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgb(0 0 0 / 5%);
+
+            h3 {
+                margin: 0 0 1rem;
+                color: #64748b;
+                font-size: 0.9rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            .value {
+                font-size: 2.5rem;
+                font-weight: 700;
+                color: #1e293b;
+
+                &.price {
+                    color: #0d9488;
+                }
+
+                &.digit {
+                    color: #7d1f3d;
+                }
+            }
+        }
+
+        .digit-stats-grid {
+            grid-column: 1 / -1;
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgb(0 0 0 / 5%);
+
+            h3 {
+                margin: 0 0 1.5rem;
+                color: #1a1a2e;
+            }
+
+            .stats-bars {
+                display: flex;
+                gap: 1rem;
+                height: 200px;
+                align-items: flex-end;
+
+                .stat-bar {
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 0.5rem;
+
+                    .bar-fill {
+                        width: 100%;
+                        background: #e2e8f0;
+                        border-radius: 4px 4px 0 0;
+                        position: relative;
+                        transition: height 0.3s ease;
+
+                        &.hot {
+                            background: #ef4444;
+                        }
+
+                        &.cold {
+                            background: #3b82f6;
+                        }
+                    }
+
+                    .digit-label {
+                        font-weight: 700;
+                        color: #64748b;
+                    }
+
+                    .percentage {
+                        font-size: 0.8rem;
+                        color: #94a3b8;
+                    }
+                }
+            }
+        }
+    }
+}

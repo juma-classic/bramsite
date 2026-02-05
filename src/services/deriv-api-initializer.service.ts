@@ -182,13 +182,13 @@ class DerivAPIInitializer {
                             const response = JSON.parse(event.data);
                             ws.close();
                             resolve(response);
-                        } catch (error) {
+                        } catch {
                             ws.close();
                             reject(new Error('Invalid JSON response'));
                         }
                     };
 
-                    ws.onerror = error => {
+                    ws.onerror = () => {
                         clearTimeout(timeout);
                         ws.close();
                         reject(new Error('WebSocket connection error'));
@@ -254,7 +254,7 @@ class DerivAPIInitializer {
         console.log('🔧 Creating fallback API for graceful degradation');
 
         const fallbackAPI: APIInstance = {
-            send: (request: any) => {
+            send: () => {
                 console.warn('⚠️ Using fallback API - limited functionality');
                 return Promise.reject(
                     new Error('Deriv API not available - please check your connection and try again')
@@ -339,6 +339,13 @@ class DerivAPIInitializer {
         this.apiInstance = null;
 
         await this.initialize();
+    }
+
+    /**
+     * Reset the API state (alias for reinitialize for backward compatibility)
+     */
+    public async reset(): Promise<void> {
+        return this.reinitialize();
     }
 
     /**
