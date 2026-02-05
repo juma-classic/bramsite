@@ -1,11 +1,9 @@
 import { ComponentProps, ReactNode } from 'react';
 import Livechat from '@/components/chat/Livechat';
 import useIsLiveChatWidgetAvailable from '@/components/chat/useIsLiveChatWidgetAvailable';
-import { TickSpeedNavButton } from '@/components/navigation/TickSpeedNavButton';
-import { PatelSignalCenterNavButton } from '@/components/navigation/PatelSignalCenterNavButton';
-import { PatelSignalsNavButton } from '@/components/navigation/PatelSignalsNavButton';
-import { SpeedBotNavButton } from '@/components/navigation/SpeedBotNavButton';
 import { DTraderManualNavButton } from '@/components/navigation/DTraderManualNavButton';
+import { SpeedBotNavButton } from '@/components/navigation/SpeedBotNavButton';
+import { TickSpeedNavButton } from '@/components/navigation/TickSpeedNavButton';
 import { useOauth2 } from '@/hooks/auth/useOauth2';
 import useRemoteConfig from '@/hooks/growthbook/useRemoteConfig';
 import { useIsIntercomAvailable } from '@/hooks/useIntercom';
@@ -67,18 +65,6 @@ const useMobileMenuConfig = (client?: RootStore['client']) => {
             },
             {
                 as: 'button',
-                label: <PatelSignalsNavButton variant='mobile' />,
-                LeftComponent: () => null,
-                onClick: () => {}, // Navigation handled by the button itself
-            },
-            {
-                as: 'button',
-                label: <PatelSignalCenterNavButton variant='mobile' />,
-                LeftComponent: () => null,
-                onClick: () => {}, // Navigation handled by the button itself
-            },
-            {
-                as: 'button',
                 label: <SpeedBotNavButton variant='mobile' />,
                 LeftComponent: () => null,
                 onClick: () => {}, // Navigation handled by the button itself
@@ -107,7 +93,11 @@ const useMobileMenuConfig = (client?: RootStore['client']) => {
                           label: localize('Live chat'),
                           LeftComponent: Livechat,
                           onClick: () => {
-                              icAvailable ? window.Intercom('show') : window.LiveChatWidget?.call('maximize');
+                              if (icAvailable) {
+                                  window.Intercom('show');
+                              } else {
+                                  window.LiveChatWidget?.call('maximize');
+                              }
                           },
                       }
                     : null,
