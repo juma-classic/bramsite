@@ -75,8 +75,6 @@ function AppWrapper() {
         const initializeApp = async () => {
             try {
                 // Initialize Deriv API with timeout handling
-                console.log('🚀 Starting Deriv API initialization...');
-
                 await networkTimeoutHandler
                     .withTimeout(
                         derivAPIInitializer.initialize(),

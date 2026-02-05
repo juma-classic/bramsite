@@ -8,20 +8,10 @@ import { lazy } from 'react';
  */
 export function delayedLazy<T extends React.ComponentType<any>>(
     importFn: () => Promise<{ default: T }>,
-    minDelay: number = 1000
+    minDelay: number = 0
 ): React.LazyExoticComponent<T> {
     return lazy(async () => {
-        const startTime = Date.now();
-        
-        const [moduleExports] = await Promise.all([
-            importFn(),
-            new Promise(resolve => {
-                const elapsedTime = Date.now() - startTime;
-                const remainingTime = Math.max(0, minDelay - elapsedTime);
-                setTimeout(resolve, remainingTime);
-            })
-        ]);
-        
-        return moduleExports;
+        // Return the import immediately without artificial delay
+        return importFn();
     });
 }
