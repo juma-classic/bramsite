@@ -68,7 +68,7 @@ const IntroLoader: React.FC<{ onFinish: () => void }> = ({ onFinish }) => {
                     zIndex: 2,
                 }}
             >
-                Initializing{dots}
+                BRAM FX Initializing{dots}
             </span>
         </div>
     );

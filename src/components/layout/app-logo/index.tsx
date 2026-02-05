@@ -8,12 +8,12 @@ export const AppLogo = () => {
     if (!isDesktop) return null;
     return (
         <a
-            href='https://www.tradermaster.site/'
+            href='https://www.bramfx.com/'
             target='_blank'
             rel='noopener noreferrer'
-            className='app-header__logo tradermaster-logo'
+            className='app-header__logo bramfx-logo'
         >
-            <span className='tradermaster-text'>TRADER MASTER</span>
+            <span className='bramfx-text'>BRAM FX</span>
         </a>
     );
 };

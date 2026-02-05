@@ -2,7 +2,7 @@
 
 ## Overview
 
-Successfully updated the Speed Bot to connect using your App ID (80836) without requiring API tokens. This provides access to public market data for real-time tick streaming.
+Successfully updated the Speed Bot to connect using your App ID (119760) without requiring API tokens. This provides access to public market data for real-time tick streaming.
 
 ## 🚀 Key Changes Implemented
 
@@ -11,8 +11,8 @@ Successfully updated the Speed Bot to connect using your App ID (80836) without 
 -   **File**: `src/components/speed-bot/DerivAPIConnection.tsx`
 -   **Changes**:
     -   Removed API token requirement
-    -   Auto-connects using App ID 80836
-    -   Connects to `wss://ws.derivws.com/websockets/v3?app_id=80836`
+    -   Auto-connects using App ID 119760
+    -   Connects to `wss://ws.derivws.com/websockets/v3?app_id=119760`
     -   Displays connection information instead of account details
     -   Shows public market data access status
 
@@ -46,14 +46,14 @@ Successfully updated the Speed Bot to connect using your App ID (80836) without 
 ### Connection Flow
 
 1. **Auto-Connect**: Component automatically connects on mount
-2. **WebSocket**: Establishes connection to `wss://ws.derivws.com/websockets/v3?app_id=80836`
+2. **WebSocket**: Establishes connection to `wss://ws.derivws.com/websockets/v3?app_id=119760`
 3. **Ping/Pong**: Tests connection with ping/pong messages
 4. **Tick Subscription**: Subscribes to real-time market data
 5. **Data Streaming**: Streams live tick data to trading engine
 
 ### App ID Configuration
 
--   **App ID**: 80836 (your registered app)
+-   **App ID**: 119760 (your registered app)
 -   **Endpoint**: `wss://ws.derivws.com/websockets/v3`
 -   **Access**: Public market data (no authentication required)
 -   **Features**: Real-time tick streaming for all volatility markets
@@ -70,14 +70,14 @@ Successfully updated the Speed Bot to connect using your App ID (80836) without 
 
 ### Automatic Connection
 
-1. **No Setup Required**: Connects automatically using App ID 80836
+1. **No Setup Required**: Connects automatically using App ID 119760
 2. **Real-Time Data**: Immediate access to live market data
 3. **Status Indicators**: Clear connection status display
 4. **Fallback Mode**: Demo mode if connection fails
 
 ### Connection Information Display
 
--   **App ID**: Shows your registered app ID (80836)
+-   **App ID**: Shows your registered app ID (119760)
 -   **Status**: Connection status (Connected/Disconnected)
 -   **Mode**: Public Market Data access
 -   **Connected At**: Timestamp of connection
@@ -116,7 +116,7 @@ Successfully updated the Speed Bot to connect using your App ID (80836) without 
 
 ### Connection Details
 
--   **App ID**: 80836
+-   **App ID**: 119760
 -   **Endpoint**: wss://ws.derivws.com/websockets/v3
 -   **Protocol**: WebSocket with ping/pong keepalive
 -   **Data Type**: Public market tick data
@@ -159,7 +159,7 @@ Successfully updated the Speed Bot to connect using your App ID (80836) without 
 
 ### Technical Achievements
 
--   ✅ App ID 80836 integration
+-   ✅ App ID 119760 integration
 -   ✅ No API token requirement
 -   ✅ Public market data access
 -   ✅ Real-time tick streaming
@@ -179,9 +179,9 @@ Successfully updated the Speed Bot to connect using your App ID (80836) without 
 
 ## 🎯 TASK COMPLETION STATUS: ✅ COMPLETE
 
-The Speed Bot now connects using your App ID (80836) without requiring API tokens:
+The Speed Bot now connects using your App ID (119760) without requiring API tokens:
 
--   ✅ Automatic connection using App ID 80836
+-   ✅ Automatic connection using App ID 119760
 -   ✅ Public market data access
 -   ✅ Real-time tick streaming
 -   ✅ No authentication required

@@ -1,5 +1,5 @@
 import React from 'react';
-import { TraderMasterLoader } from '@/components/loader/TraderMasterLoader';
+import { BramFXLoader } from '@/components/loader/BramFXLoader';
 import { generateDerivApiInstance } from '@/external/bot-skeleton/services/api/appId';
 import { URLUtils } from '@deriv-com/utils';
 import App from './App';
@@ -61,7 +61,7 @@ export const AuthWrapper = () => {
     }, [loginInfo, paramsToDelete]);
 
     if (!isAuthComplete) {
-        return <TraderMasterLoader onLoadComplete={() => {}} duration={2000} />;
+        return <BramFXLoader onLoadComplete={() => {}} duration={2000} />;
     }
 
     return <App />;

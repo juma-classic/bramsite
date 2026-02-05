@@ -36,8 +36,8 @@ export class FastLaneWebSocketService {
             // Determine endpoint based on mode
             const endpoint =
                 this.store.mode === TradingMode.DEMO
-                    ? 'wss://ws.derivws.com/websockets/v3?app_id=80836'
-                    : 'wss://ws.derivws.com/websockets/v3?app_id=80836';
+                    ? 'wss://ws.derivws.com/websockets/v3?app_id=119760'
+                    : 'wss://ws.derivws.com/websockets/v3?app_id=119760';
 
             this.store.addLog('info', `Connecting to ${this.store.mode.toUpperCase()} server...`);
 

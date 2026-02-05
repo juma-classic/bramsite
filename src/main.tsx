@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { AuthWrapper } from './app/AuthWrapper';
-import { TraderMasterLoader } from './components/loader/TraderMasterLoader';
+import { BramFXLoader } from './components/loader/BramFXLoader';
 import { derivAPIInitializer } from './services/deriv-api-initializer.service';
 import { chunkErrorHandler } from './utils/chunk-error-handler';
 import { networkTimeoutHandler } from './utils/network-timeout-handler';
@@ -102,7 +102,7 @@ function AppWrapper() {
     }, []);
 
     if (isLoading) {
-        return <TraderMasterLoader onLoadComplete={() => setIsLoading(false)} duration={300} />;
+        return <BramFXLoader onLoadComplete={() => setIsLoading(false)} duration={300} />;
     }
 
     return <AuthWrapper />;

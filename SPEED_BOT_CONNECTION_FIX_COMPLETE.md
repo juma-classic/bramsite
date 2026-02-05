@@ -103,7 +103,7 @@ if (data.error) {
 
 ### Connection Flow
 
-1. **Connect**: WebSocket opens to `wss://ws.derivws.com/websockets/v3?app_id=80836`
+1. **Connect**: WebSocket opens to `wss://ws.derivws.com/websockets/v3?app_id=119760`
 2. **Ping**: Send `{"ping": 1}` to test connection
 3. **Pong**: Receive `{"msg_type": "pong", "pong": 1}` response ✅
 4. **Connected**: UI updates to show "Connected" status ✅
@@ -139,7 +139,7 @@ if (data.error) {
 1. Open browser dev tools
 2. Navigate to Speed Bot page
 3. Check console for connection messages:
-    - `✅ Connected to Deriv API with App ID: 80836`
+    - `✅ Connected to Deriv API with App ID: 119760`
     - `🏓 Received pong - connection confirmed`
     - `📊 Received tick data`
 
@@ -147,8 +147,8 @@ if (data.error) {
 
 ### Connection Details
 
--   **Endpoint**: `wss://ws.derivws.com/websockets/v3?app_id=80836`
--   **App ID**: 80836 (public market data access)
+-   **Endpoint**: `wss://ws.derivws.com/websockets/v3?app_id=119760`
+-   **App ID**: 119760 (public market data access)
 -   **Authentication**: None required for public data
 -   **Protocol**: WebSocket v3
 -   **Message Format**: JSON with `msg_type` field
@@ -156,7 +156,7 @@ if (data.error) {
 ### Console Messages to Look For
 
 ```
-✅ Connected to Deriv API with App ID: 80836
+✅ Connected to Deriv API with App ID: 119760
 📡 Received message: {"msg_type":"pong","pong":1}
 🏓 Received pong - connection confirmed
 📊 Received tick data: {"tick":{"quote":123.456,"symbol":"R_50"}}
@@ -211,4 +211,4 @@ The Speed Bot WebSocket connection issue has been **completely resolved**. The f
 
 **Status**: ✅ COMPLETE - Ready for testing and production use
 
-The development server is running and the Speed Bot should now connect successfully to the Deriv API using App ID 80836 for real-time market data access.
+The development server is running and the Speed Bot should now connect successfully to the Deriv API using App ID 119760 for real-time market data access.

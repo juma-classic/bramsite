@@ -53,7 +53,7 @@ class DAnalysisAPI {
     private connect() {
         try {
             // Use the same app ID as the rest of the site
-            const appId = '80836';
+            const appId = '119760';
             const wsUrl = `wss://ws.derivws.com/websockets/v3?app_id=${appId}`;
             
             console.log('🔌 DAnalysis connecting to Deriv API with App ID:', appId);

@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import './TraderMasterLoader.scss';
+import './BramFXLoader.scss';
 
-interface TraderMasterLoaderProps {
+interface BramFXLoaderProps {
     onLoadComplete?: () => void;
     duration?: number;
 }
 
-export const TraderMasterLoader: React.FC<TraderMasterLoaderProps> = ({ 
+export const BramFXLoader: React.FC<BramFXLoaderProps> = ({ 
     onLoadComplete, 
     duration = 4000 
 }) => {
@@ -159,7 +159,7 @@ export const TraderMasterLoader: React.FC<TraderMasterLoaderProps> = ({
     }, [duration, onLoadComplete, statuses.length]);
 
     return (
-        <div className={`tradermaster-loader ${isComplete ? 'fade-out' : ''}`}>
+        <div className={`bramfx-loader ${isComplete ? 'fade-out' : ''}`}>
             <canvas ref={particlesRef} className="particles-canvas" />
             
             <div className="loader-content">
@@ -171,8 +171,8 @@ export const TraderMasterLoader: React.FC<TraderMasterLoaderProps> = ({
                             <div className="icon-arrow"></div>
                         </div>
                         <h1 className="logo-text">
-                            <span className="trader">TRADER</span>
-                            <span className="master">MASTER</span>
+                            <span className="bram">BRAM</span>
+                            <span className="fx">FX</span>
                         </h1>
                     </div>
                     <p className="tagline">Advanced Trading Platform</p>
@@ -222,4 +222,4 @@ export const TraderMasterLoader: React.FC<TraderMasterLoaderProps> = ({
     );
 };
 
-export default TraderMasterLoader;
+export default BramFXLoader;

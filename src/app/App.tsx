@@ -84,7 +84,7 @@ const router = createBrowserRouter(
             path='/'
             element={
                 <Suspense
-                    fallback={<ChunkLoader message={localize('Welcome to Trader Master connecting to the server...')} />}
+                    fallback={<ChunkLoader message={localize('Welcome to BRAM FX connecting to the server...')} />}
                 >
                     <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
                         <StoreProvider>

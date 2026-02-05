@@ -1,11 +1,11 @@
 /**
  * Smart Analysis API - Enhanced with Robust WebSocket Connection
- * Uses App ID 80836 for Smart Analysis with robust connection management
+ * Uses App ID 119760 for Smart Analysis with robust connection management
  */
 
 class SmartAnalysisAPI {
     constructor() {
-        this.appId = '80836';
+        this.appId = '119760';
         this.wsManager = null;
         this.isInitialized = false;
         this.callbacks = {};
@@ -412,4 +412,4 @@ class SmartAnalysisAPI {
 // Make available globally
 window.SmartAnalysisAPI = SmartAnalysisAPI;
 
-console.log('✅ Smart Analysis API loaded with App ID 80836');
+console.log('✅ Smart Analysis API loaded with App ID 119760');
