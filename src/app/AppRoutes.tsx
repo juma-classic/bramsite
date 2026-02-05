@@ -5,9 +5,9 @@ import RoutePromptDialog from '@/components/route-prompt-dialog';
 import { StoreProvider } from '@/hooks/useStore';
 import CallbackPage from '@/pages/callback';
 import Endpoint from '@/pages/endpoint';
+import { delayedLazy } from '@/utils/delayed-lazy';
 import { initializeI18n, localize, TranslationProvider } from '@deriv-com/translations';
 import CoreStoreProvider from './CoreStoreProvider';
-import { delayedLazy } from '@/utils/delayed-lazy';
 
 // Main components with delayed loading
 const Layout = delayedLazy(() => import('../components/layout'), 1000);
@@ -22,7 +22,6 @@ const FlashAnimationDemo = lazy(() =>
     import('../components/signals/FlashAnimationDemo').then(m => ({ default: m.FlashAnimationDemo }))
 );
 const EnhancedSignalsDemo = lazy(() => import('../pages/enhanced-signals-demo').then(m => ({ default: m.default })));
-const AdvancedAlgo = lazy(() => import('../pages/advanced-algo').then(m => ({ default: m.default })));
 const ElvisZone = lazy(() => import('../pages/elvis-zone').then(m => ({ default: m.default })));
 
 // Accumulator Trading Page
@@ -38,13 +37,6 @@ const DigitHackerPage = lazy(() => import('../pages/digit-hacker-page').then(m =
 const SignalSavvyPage = lazy(() => import('../pages/signal-savvy-page').then(m => ({ default: m.default })));
 
 // Patel Signals Page
-const PatelSignalsPage = lazy(() => import('../pages/patel-signals-page').then(m => ({ default: m.default })));
-
-// Patel Signal Center Page
-const PatelSignalCenterPage = lazy(() =>
-    import('../pages/patel-signal-center-page').then(m => ({ default: m.default }))
-);
-
 // Rich Mother Page
 const RichMotherPage = lazy(() => import('../pages/rich-mother-page').then(m => ({ default: m.default })));
 
@@ -82,9 +74,6 @@ export const router = createBrowserRouter(
             <Route path='endpoint' element={<Endpoint />} />
             <Route path='callback' element={<CallbackPage />} />
 
-            {/* Advanced Algo - Main Production Page */}
-            <Route path='advanced-algo' element={<AdvancedAlgo />} />
-
             {/* ElvisZone - Matches/Differs Analyzer */}
             <Route path='elvis-zone' element={<ElvisZone />} />
 
@@ -99,12 +88,6 @@ export const router = createBrowserRouter(
 
             {/* Signal Savvy Page */}
             <Route path='signal-savvy' element={<SignalSavvyPage />} />
-
-            {/* Patel Signals Page */}
-            <Route path='patel-signals' element={<PatelSignalsPage />} />
-
-            {/* Patel Signal Center Page */}
-            <Route path='patel-signal-center' element={<PatelSignalCenterPage />} />
 
             {/* Rich Mother Page */}
             <Route path='rich-mother' element={<RichMotherPage />} />

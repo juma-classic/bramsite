@@ -2,15 +2,11 @@ import React, { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { observer } from 'mobx-react-lite';
 import AnalysisTool from '@/components/analysis-tool/AnalysisTool';
-import { ProtectedPatelSignalCenter } from '@/components/auth/ProtectedPatelSignalCenter';
-import { ProtectedPatelSignals } from '@/components/auth/ProtectedPatelSignals';
 import ChunkLoader from '@/components/loader/chunk-loader';
 import DesktopWrapper from '@/components/shared_ui/desktop-wrapper';
 import Dialog from '@/components/shared_ui/dialog';
 import MobileWrapper from '@/components/shared_ui/mobile-wrapper';
 import Tabs from '@/components/shared_ui/tabs/tabs';
-import PatelPrime from '@/components/signals/PatelPrime';
-import { PatelSignalCenter } from '@/components/signals/PatelSignalCenter';
 import { ProtectedSignalsCenter } from '@/components/signals/ProtectedSignalsCenter';
 import TradingViewModal from '@/components/trading-view-chart/trading-view-modal';
 import { DBOT_TABS } from '@/constants/bot-contents';
@@ -29,7 +25,6 @@ import RunStrategy from '../dashboard/run-strategy';
 
 const Chart = lazy(() => import('../chart'));
 const Tutorial = lazy(() => import('../tutorials'));
-const AdvancedAlgo = lazy(() => import('../advanced-algo'));
 const DAnalysis = lazy(() => import('@/components/analysis-tool/AnalysisTool')); // Using AnalysisTool as DAnalysis
 const XDtrader = lazy(() => import('../xdtrader'));
 
@@ -117,37 +112,6 @@ const SignalsIcon = () => (
         <rect x='10' y='17' width='10' height='3' rx='1' fill='#ffd700' />
         <circle cx='20' cy='6.5' r='1.5' fill='currentColor' />
         <circle cx='20' cy='18.5' r='1.5' fill='currentColor' />
-    </svg>
-);
-
-const AdvancedAlgoIcon = () => (
-    <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        {/* Brain/AI symbol */}
-        <path
-            d='M12 2C8.5 2 6 4.5 6 8c0 1.5.5 3 1.5 4.5L12 22l4.5-9.5C17.5 11 18 9.5 18 8c0-3.5-2.5-6-6-6z'
-            stroke='currentColor'
-            strokeWidth='2'
-            fill='none'
-        />
-        {/* Algorithm pattern */}
-        <circle cx='12' cy='8' r='2' fill='#3b82f6' />
-        <path d='M10 8h4M12 6v4' stroke='#fff' strokeWidth='1.5' strokeLinecap='round' />
-        {/* Data points */}
-        <circle cx='8' cy='6' r='1' fill='#10b981' />
-        <circle cx='16' cy='6' r='1' fill='#10b981' />
-        <circle cx='8' cy='10' r='1' fill='#f59e0b' />
-        <circle cx='16' cy='10' r='1' fill='#f59e0b' />
-        {/* Connection lines */}
-        <path
-            d='M9 6.5L11 7.5M15 7.5L17 6.5M9 9.5L11 8.5M15 8.5L17 9.5'
-            stroke='currentColor'
-            strokeWidth='1'
-            opacity='0.6'
-        />
-        {/* AI badge */}
-        <text x='12' y='16' textAnchor='middle' fontSize='6' fill='#3b82f6' fontWeight='bold'>
-            AI
-        </text>
     </svg>
 );
 
@@ -248,85 +212,6 @@ const XDtraderIcon = () => (
         <rect x='15' y='2' width='7' height='3' rx='1' fill='#8b5cf6' />
         <text x='18.5' y='4' textAnchor='middle' fontSize='5' fill='#fff' fontWeight='bold'>
             xDT
-        </text>
-    </svg>
-);
-
-const PatelSignalsIcon = () => (
-    <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        {/* Signal waves */}
-        <path
-            d='M2 12h4l2-6 4 12 4-8 2 4h4'
-            stroke='currentColor'
-            strokeWidth='2'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-            fill='none'
-        />
-
-        {/* Signal dots */}
-        <circle cx='6' cy='12' r='1.5' fill='#1e3a8a' />
-        <circle cx='10' cy='6' r='1.5' fill='#1e40af' />
-        <circle cx='14' cy='18' r='1.5' fill='#1e3a8a' />
-        <circle cx='18' cy='10' r='1.5' fill='#1e40af' />
-
-        {/* Target crosshair */}
-        <circle cx='12' cy='12' r='8' stroke='currentColor' strokeWidth='1' fill='none' opacity='0.3' />
-        <path
-            d='M12 4v2M12 18v2M4 12h2M18 12h2'
-            stroke='currentColor'
-            strokeWidth='1.5'
-            strokeLinecap='round'
-            opacity='0.5'
-        />
-
-        {/* Center indicator */}
-        <circle cx='12' cy='12' r='2' fill='#1e3a8a' opacity='0.8' />
-        <circle cx='12' cy='12' r='1' fill='#fff' />
-    </svg>
-);
-
-const PatelSignalCenterIcon = () => (
-    <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        {/* Central hub */}
-        <circle cx='12' cy='12' r='4' stroke='#1e3a8a' strokeWidth='2' fill='none' />
-        <circle cx='12' cy='12' r='4' fill='#1e3a8a' opacity='0.1' />
-
-        {/* Signal distribution lines */}
-        <path
-            d='M12 2V8M12 16V22M2 12H8M16 12H22'
-            stroke='#1e3a8a'
-            strokeWidth='2'
-            strokeLinecap='round'
-            opacity='0.6'
-        />
-        <path
-            d='M5.5 5.5L9.5 9.5M14.5 14.5L18.5 18.5M18.5 5.5L14.5 9.5M9.5 14.5L5.5 18.5'
-            stroke='#1e3a8a'
-            strokeWidth='1.5'
-            strokeLinecap='round'
-            opacity='0.4'
-        />
-
-        {/* Data nodes */}
-        <circle cx='12' cy='4' r='1.5' fill='#6366f1' />
-        <circle cx='20' cy='12' r='1.5' fill='#6366f1' />
-        <circle cx='12' cy='20' r='1.5' fill='#6366f1' />
-        <circle cx='4' cy='12' r='1.5' fill='#6366f1' />
-
-        {/* Corner nodes */}
-        <circle cx='6' cy='6' r='1' fill='#ffd700' />
-        <circle cx='18' cy='6' r='1' fill='#ffd700' />
-        <circle cx='18' cy='18' r='1' fill='#ffd700' />
-        <circle cx='6' cy='18' r='1' fill='#ffd700' />
-
-        {/* Center core */}
-        <circle cx='12' cy='12' r='2' fill='#1e3a8a' />
-        <circle cx='12' cy='12' r='1' fill='#fff' />
-
-        {/* Statistical indicators */}
-        <text x='12' y='13' textAnchor='middle' fontSize='6' fill='#fff' fontWeight='bold'>
-            📊
         </text>
     </svg>
 );
@@ -2004,14 +1889,9 @@ const AppWrapper = observer(() => {
         };
     }, [setActiveTab]);
 
-    const showRunPanel = [
-        DBOT_TABS.BOT_BUILDER,
-        DBOT_TABS.CHART,
-        DBOT_TABS.PATEL_SIGNALS,
-        DBOT_TABS.PATEL_SIGNAL_CENTER,
-        DBOT_TABS.ANALYSIS_TOOL,
-        DBOT_TABS.SIGNALS,
-    ].includes(active_tab);
+    const showRunPanel = [DBOT_TABS.BOT_BUILDER, DBOT_TABS.CHART, DBOT_TABS.ANALYSIS_TOOL, DBOT_TABS.SIGNALS].includes(
+        active_tab
+    );
 
     return (
         <>
@@ -2113,76 +1993,6 @@ const AppWrapper = observer(() => {
                                 >
                                     <XDtrader show_digits_stats={false} />
                                 </Suspense>
-                            </div>
-                        </div>
-                        {/* PATEL PRIME TAB */}
-                        <div
-                            label={
-                                <>
-                                    <PatelSignalsIcon />
-                                    <Localize i18n_default_text='Patel Prime' />
-                                    <span
-                                        className='tab-badge'
-                                        style={{
-                                            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                                            color: '#fff',
-                                            padding: '2px 8px',
-                                            borderRadius: '12px',
-                                            fontSize: '10px',
-                                            fontWeight: '700',
-                                            marginLeft: '8px',
-                                        }}
-                                    >
-                                        PRIME
-                                    </span>
-                                </>
-                            }
-                            id='id-patel-signals'
-                        >
-                            <ProtectedPatelSignals>
-                                <div className='patel-prime-container'>
-                                    <PatelPrime />
-                                </div>
-                            </ProtectedPatelSignals>
-                        </div>
-                        {/* PATEL SIGNAL CENTER TAB */}
-                        <div
-                            label={
-                                <>
-                                    <PatelSignalCenterIcon />
-                                    <Localize i18n_default_text='Patel Signal Center' />
-                                    <span
-                                        className='tab-badge'
-                                        style={{
-                                            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                                            color: '#fff',
-                                            padding: '2px 8px',
-                                            borderRadius: '12px',
-                                            fontSize: '10px',
-                                            fontWeight: '700',
-                                            marginLeft: '8px',
-                                        }}
-                                    >
-                                        📊
-                                    </span>
-                                </>
-                            }
-                            id='id-patel-signal-center'
-                        >
-                            <div
-                                className='patel-signal-center-container'
-                                style={{
-                                    width: '100%',
-                                    height: 'calc(100vh - 120px)',
-                                    minHeight: 'calc(100vh - 120px)',
-                                    overflow: 'auto',
-                                    background: '#f8fafc',
-                                    padding: '0',
-                                }}
-                            >
-                                <ProtectedPatelSignalCenter>
-                                    <PatelSignalCenter />
-                                </ProtectedPatelSignalCenter>
                             </div>
                         </div>
                         {/* ANALYSIS TOOL TAB */}
@@ -2764,21 +2574,6 @@ const AppWrapper = observer(() => {
                             id='id-signals'
                         >
                             <ProtectedSignalsCenter />
-                        </div>
-                        {/* ADVANCED ALGO TAB */}
-                        <div
-                            label={
-                                <>
-                                    <AdvancedAlgoIcon />
-                                    <Localize i18n_default_text='Advanced Algo' />
-                                    <span className='tab-badge ai-badge'>AI</span>
-                                </>
-                            }
-                            id='id-advanced-algo'
-                        >
-                            <Suspense fallback={<div>Loading Advanced Algo...</div>}>
-                                <AdvancedAlgo />
-                            </Suspense>
                         </div>
 
                         {/* FREE BOTS TAB */}
