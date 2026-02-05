@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { patelBotLoaderService } from '../../services/patel-bot-loader.service';
 import { Alert, AlertManager, checkForAlerts, DEFAULT_ALERT_SETTINGS } from '../../utils/alert-manager';
 import { logError } from '../../utils/error-logger';
 import { DEFAULT_NOTIFICATION_SETTINGS, NotificationManager } from '../../utils/notification-manager';
@@ -8,7 +7,6 @@ import { getTopN } from '../../utils/probability-calculator';
 import { AlertNotificationPanel } from './AlertNotificationPanel';
 import { DigitCircle } from './DigitCircle';
 import { LoadingSkeleton } from './LoadingSkeleton';
-
 import { ProbabilityPredictionCard } from './ProbabilityPredictionCard';
 import { RecentTicksList } from './RecentTicksList';
 import './ZeusAnalysisTool.scss';
@@ -108,9 +106,6 @@ export const ZeusAnalysisTool: React.FC<ZeusAnalysisToolProps> = ({ onNavigateTo
     const [nextSignalCountdown, setNextSignalCountdown] = useState<number>(60);
     const [isSignalActive, setIsSignalActive] = useState<boolean>(false);
     const [signalInterval, setSignalInterval] = useState<number>(60); // 60 seconds default
-
-    // Settings panel state
-    const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState<boolean>(false);
 
     // Constant for tick count
     const tickCount = 1000;
@@ -611,12 +606,6 @@ export const ZeusAnalysisTool: React.FC<ZeusAnalysisToolProps> = ({ onNavigateTo
         setCurrentTracker(tracker);
         console.log(`📡 New timed signal generated: Digit ${prediction.digit} (${prediction.confidence})`);
     }, [ticks, predictionStrategy, signalInterval]);
-
-    // Handle digit circle click - COMPLETELY DISABLED: No functionality when clicking digits
-    const handleDigitClick = useCallback(async (digit: number) => {
-        // Completely disabled - no action when clicking digits in PATEL mode
-        return;
-    }, []);
 
     // Timed Signal Countdown System
     useEffect(() => {
