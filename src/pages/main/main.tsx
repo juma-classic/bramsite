@@ -25,7 +25,9 @@ import RunStrategy from '../dashboard/run-strategy';
 
 const Chart = lazy(() => import('../chart'));
 const Tutorial = lazy(() => import('../tutorials'));
-const DAnalysis = lazy(() => import('@/components/analysis-tool/AnalysisTool')); // Using AnalysisTool as DAnalysis
+const DAnalysis = lazy(() =>
+    import('@/components/zeus-analysis/ZeusAnalysisTool').then(m => ({ default: m.ZeusAnalysisTool }))
+); // Using Zeus AI Analysis Tool
 const XDtrader = lazy(() => import('../xdtrader'));
 
 const DashboardIcon = () => (
