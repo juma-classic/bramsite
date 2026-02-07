@@ -297,57 +297,34 @@ const AppWrapper = observer(() => {
         const fetchBots = async () => {
             const botFiles = [
                 // Core Trading Bots
-                'Bram Entrypoint V1.xml', // Renamed from PATEL (with Entry).xml
+                'Bram Entrypoint V1.xml',
+                'MatchesMaster.xml',
+                'Bram Auto V1.xml',
+                'Bram Auto V2.xml',
 
                 // CFX Series Bots
-                'CFX-025-Base.xml',
-                'CFX-025-Step1.xml',
-                'CFX-025-Step2.xml',
-                'CFX-025-Step3.xml',
-                'CFX-025-Step4.xml',
-                'CFX-025-Enhanced.xml',
-                'Poverty Killer 2026.xml', // Renamed from CFX - 025.xml
-                'Bram Even Odd.xml', // Renamed from CFX-EvenOdd.xml
+                'Poverty Killer 2026.xml',
+                'Bram Even Odd.xml',
                 'CFX-RiseFall.xml',
+                'updated CFX Auto-Bot.xml',
 
-                // Professional Trading Bots
-                'MatchesMaster.xml',
-                'Bram Auto V1.xml', // Renamed from Deriv Killer -  State FX.xml
-                'SpeedHunter.xml',
+                // Ghost Series Bots
+                'Even Odd Ghost V1.xml',
+                'Over_Under Ghost.xml',
+                'Over_Under Ghost v2.xml',
 
-                // States FX Bot Collection
-                'States FX SpeedBot(With Entry).xml',
-                'Elvis SpeedBot(Risk-Based Martingale).xml',
-                'Elvis SpeedBot(Risk-Based).xml',
-                'Elvis SpeedBot(With Entry).xml',
-                'Over 3 Delirium by  State FX.xml',
-                'Over_Under Ghost - by  State FX.xml',
-                'Over_Under Ghost v2 - by State FX.xml',
-                'Flipping-Tool-2026 -  State FX .xml',
-
-                // Advanced Strategy Bots
-                'Dexterator AI .xml',
-                'Dexterator CFX Hit&Run by  State FX.xml',
-                'Bram Auto V2.xml', // Renamed from D6 Deriv by  State FX.xml
-                'Even Odd Ghost V1 by  State FX.xml',
-                'updated CFX Auto-Bot by  State FX.xml',
-
-                // Specialized Bots
+                // Specialized Strategy Bots
+                'Over 3 Delirium.xml',
+                'Flipping-Tool-2026.xml',
                 'MATCHES (with Entry).xml',
                 'EVENODD Double loss Bot .xml',
-                'Over2 Master.xml',
                 'Raziel Over Under.xml',
-                'Raziel Over Under Entry Point.xml',
-                'noloss bot.xml',
-                'DIFF SMART BOT.xml',
                 'Digit Differ Split martingale Strategy[4nd July 2022].xml',
 
                 // Premium & Special Bots
                 'AUTO C4 VOLT 🇬🇧 2 🇬🇧 AI PREMIUM ROBOT  (2) (1).xml',
                 '$Dollar printer .xml',
                 'M27 Auto Switch bot 2024 (1).xml',
-                'GreenLight Pro - 2026 Over .xml',
-                'Odins_ghost.xml',
             ];
             const botPromises = botFiles.map(async file => {
                 try {
