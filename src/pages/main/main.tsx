@@ -297,7 +297,7 @@ const AppWrapper = observer(() => {
         const fetchBots = async () => {
             const botFiles = [
                 // Core Trading Bots
-                'PATEL (with Entry).xml', // Added to top of the list
+                'Bram Entrypoint V1.xml', // Renamed from PATEL (with Entry).xml
 
                 // CFX Series Bots
                 'CFX-025-Base.xml',
@@ -306,13 +306,13 @@ const AppWrapper = observer(() => {
                 'CFX-025-Step3.xml',
                 'CFX-025-Step4.xml',
                 'CFX-025-Enhanced.xml',
-                'CFX - 025.xml',
-                'CFX-EvenOdd.xml',
+                'Poverty Killer 2026.xml', // Renamed from CFX - 025.xml
+                'Bram Even Odd.xml', // Renamed from CFX-EvenOdd.xml
                 'CFX-RiseFall.xml',
 
                 // Professional Trading Bots
                 'MatchesMaster.xml',
-                'Deriv Killer -  State FX.xml',
+                'Bram Auto V1.xml', // Renamed from Deriv Killer -  State FX.xml
                 'SpeedHunter.xml',
 
                 // States FX Bot Collection
@@ -328,7 +328,7 @@ const AppWrapper = observer(() => {
                 // Advanced Strategy Bots
                 'Dexterator AI .xml',
                 'Dexterator CFX Hit&Run by  State FX.xml',
-                'D6 Deriv by  State FX.xml',
+                'Bram Auto V2.xml', // Renamed from D6 Deriv by  State FX.xml
                 'Even Odd Ghost V1 by  State FX.xml',
                 'updated CFX Auto-Bot by  State FX.xml',
 
@@ -1475,10 +1475,10 @@ const AppWrapper = observer(() => {
                 targetDigit,
             });
 
-            // Find the MATCHES bot XML file (we'll use PATEL as template and modify it)
-            const templateBot = bots.find(b => b.filePath === 'PATEL (with Entry).xml');
+            // Find the MATCHES bot XML file (we'll use Bram Entrypoint V1 as template and modify it)
+            const templateBot = bots.find(b => b.filePath === 'Bram Entrypoint V1.xml');
             if (templateBot) {
-                console.log('✅ Found PATEL template, configuring for MATCHES mode...');
+                console.log('✅ Found Bram Entrypoint V1 template, configuring for MATCHES mode...');
 
                 // Parse and configure the XML for MATCHES mode
                 const parser = new DOMParser();
