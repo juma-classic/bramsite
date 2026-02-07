@@ -11,6 +11,7 @@ import { ProtectedSignalsCenter } from '@/components/signals/ProtectedSignalsCen
 import TradingViewModal from '@/components/trading-view-chart/trading-view-modal';
 import { FreeBotsSection } from '@/components/free-bots/FreeBotsSection';
 import { TradingAnalysisPage } from '@/pages/trading-analysis/TradingAnalysisPage';
+import { DerivAnalysisPage } from '@/pages/deriv-analysis/DerivAnalysisPage';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { api_base, updateWorkspaceName } from '@/external/bot-skeleton';
 import { CONNECTION_STATUS } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
@@ -273,6 +274,27 @@ const XDtraderIcon = () => (
         <text x='18.5' y='4' textAnchor='middle' fontSize='5' fill='#fff' fontWeight='bold'>
             xDT
         </text>
+    </svg>
+);
+
+const DerivAnalysisIcon = () => (
+    <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        {/* Deriv logo inspired design */}
+        <circle cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='2' fill='none' />
+        {/* D letter with chart */}
+        <path
+            d='M8 8h3c2 0 3 1 3 4s-1 4-3 4H8V8z'
+            stroke='#FFD700'
+            strokeWidth='2'
+            fill='none'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+        />
+        {/* Chart overlay */}
+        <path d='M15 10l2 -1l2 2l2 -2' stroke='#FFD700' strokeWidth='1.5' strokeLinecap='round' opacity='0.8' />
+        {/* Sparkle */}
+        <circle cx='19' cy='5' r='1.5' fill='#FFD700' />
+        <circle cx='5' cy='19' r='1' fill='#FFD700' opacity='0.6' />
     </svg>
 );
 
@@ -2641,6 +2663,19 @@ const AppWrapper = observer(() => {
                             id='id-trading-analysis'
                         >
                             <TradingAnalysisPage />
+                        </div>
+
+                        {/* DERIV ANALYSIS TAB */}
+                        <div
+                            label={
+                                <>
+                                    <DerivAnalysisIcon />
+                                    <Localize i18n_default_text='Deriv Analysis' />
+                                </>
+                            }
+                            id='id-deriv-analysis'
+                        >
+                            <DerivAnalysisPage />
                         </div>
 
                         {/* FREE BOTS TAB */}

@@ -1,0 +1,69 @@
+.deriv-analysis-page {
+    width: 100%;
+    min-height: 100vh;
+    background: #f5f7fa;
+    display: flex;
+    flex-direction: column;
+}
+
+.deriv-analysis-header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    padding: 2rem;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 4px 16px rgb(30 58 138 / 20%);
+
+    h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #fff;
+    }
+
+    p {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+}
+
+.deriv-trader-container {
+    flex: 1;
+    padding: 1rem;
+    display: flex;
+    background: #fff;
+
+    .deriv-trader-iframe {
+        width: 100%;
+        height: calc(100vh - 200px);
+        min-height: 700px;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgb(0 0 0 / 10%);
+    }
+}
+
+// Responsive Design
+@media (width <= 768px) {
+    .deriv-analysis-header {
+        padding: 1.5rem 1rem;
+
+        h1 {
+            font-size: 1.5rem;
+        }
+
+        p {
+            font-size: 0.9rem;
+        }
+    }
+
+    .deriv-trader-container {
+        padding: 0.5rem;
+
+        .deriv-trader-iframe {
+            height: calc(100vh - 180px);
+            min-height: 600px;
+            border-radius: 4px;
+        }
+    }
+}
