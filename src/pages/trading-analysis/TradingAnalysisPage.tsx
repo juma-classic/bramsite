@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { derivAPIService } from '@/services/deriv-api.service';
 import { api_base } from '@/external/bot-skeleton';
+import { useStore } from '@/hooks/useStore';
 import './TradingAnalysisPage.scss';
 
 interface TickData {
@@ -26,6 +27,9 @@ const MARKET_SYMBOLS: { [key: string]: string } = {
 };
 
 export const TradingAnalysisPage: React.FC = () => {
+    const store = useStore();
+    const isLoggedIn = store?.client?.is_logged_in || false;
+
     const [market, setMarket] = useState('Volatility 10 Index');
     const [tickType, setTickType] = useState('Even/Odd');
     const [numberOfTicks, setNumberOfTicks] = useState(1000);
@@ -36,6 +40,7 @@ export const TradingAnalysisPage: React.FC = () => {
     const [stat2Count, setStat2Count] = useState(0);
     const [isApiReady, setIsApiReady] = useState(false);
     const [isSubscribed, setIsSubscribed] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string>('');
     const subscriptionIdRef = useRef<string | null>(null);
     const tickHistoryRef = useRef<TickData[]>([]);
 
@@ -44,14 +49,16 @@ export const TradingAnalysisPage: React.FC = () => {
         const checkApiReady = () => {
             if (api_base.api) {
                 console.log('✅ Deriv API is ready');
+                console.log('👤 Login status:', isLoggedIn ? 'Logged in' : 'Not logged in (using demo data)');
                 setIsApiReady(true);
+                setErrorMessage('');
             } else {
                 console.log('⏳ Waiting for Deriv API...');
                 setTimeout(checkApiReady, 500);
             }
         };
         checkApiReady();
-    }, []);
+    }, [isLoggedIn]);
 
     // Extract last digit from price
     const extractLastDigit = (price: number): number => {
@@ -108,6 +115,10 @@ export const TradingAnalysisPage: React.FC = () => {
                         console.log('💰 Initial price:', prices[prices.length - 1]);
                     }
                     calculateStatistics(historyTicks);
+                    setErrorMessage('');
+                } else {
+                    console.warn('⚠️ No history data received');
+                    setErrorMessage('No historical data available');
                 }
 
                 // Subscribe to live ticks
@@ -139,6 +150,11 @@ export const TradingAnalysisPage: React.FC = () => {
             } catch (error) {
                 console.error('❌ Failed to subscribe:', error);
                 setIsSubscribed(false);
+                setErrorMessage(
+                    isLoggedIn
+                        ? 'Failed to connect to Deriv API. Please check your connection.'
+                        : 'Please log in to Deriv to access live market data.'
+                );
             }
         };
 
@@ -343,12 +359,21 @@ export const TradingAnalysisPage: React.FC = () => {
                             className={`status-indicator ${isApiReady && isSubscribed ? 'connected' : 'disconnected'}`}
                         ></span>
                         <span className='status-text'>
-                            {!isApiReady ? 'Initializing API...' : isSubscribed ? 'Live Data' : 'Connecting...'}
+                            {!isApiReady
+                                ? 'Initializing API...'
+                                : isSubscribed
+                                  ? 'Live Data'
+                                  : errorMessage || 'Connecting...'}
                         </span>
                     </div>
                     <div className='market-name'>{market}</div>
                     <div className='price-label'>CURRENT PRICE</div>
                     <div className='price-value'>{currentPrice > 0 ? currentPrice.toFixed(2) : '---'}</div>
+                    {!isLoggedIn && (
+                        <div className='login-notice'>
+                            💡 Tip: Log in to Deriv for full access to all markets and features
+                        </div>
+                    )}
                     <div className='price-stats'>
                         <div className='stat'>
                             <span className='stat-label'>{labels.label1}</span>
