@@ -10,6 +10,7 @@ import Tabs from '@/components/shared_ui/tabs/tabs';
 import { ProtectedSignalsCenter } from '@/components/signals/ProtectedSignalsCenter';
 import TradingViewModal from '@/components/trading-view-chart/trading-view-modal';
 import { FreeBotsSection } from '@/components/free-bots/FreeBotsSection';
+import { TradingAnalysisPage } from '@/pages/trading-analysis/TradingAnalysisPage';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { api_base, updateWorkspaceName } from '@/external/bot-skeleton';
 import { CONNECTION_STATUS } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
@@ -119,6 +120,20 @@ const AnalysisToolIcon = () => (
         {/* Sparkle */}
         <circle cx='18' cy='6' r='1.5' fill='#FFD700' opacity='0.6' />
         <path d='M18 4v4M16 6h4' stroke='#FFD700' strokeWidth='1' opacity='0.6' />
+    </svg>
+);
+
+const TradingAnalysisIcon = () => (
+    <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        {/* Document with chart */}
+        <rect x='4' y='2' width='16' height='20' rx='2' stroke='currentColor' strokeWidth='2' fill='none' />
+        {/* Chart bars */}
+        <rect x='7' y='14' width='2' height='5' fill='#FFD700' />
+        <rect x='10' y='11' width='2' height='8' fill='#FFD700' />
+        <rect x='13' y='13' width='2' height='6' fill='#FFD700' />
+        <rect x='16' y='9' width='2' height='10' fill='#FFD700' />
+        {/* Document lines */}
+        <path d='M7 6h10M7 9h6' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' opacity='0.6' />
     </svg>
 );
 
@@ -2613,6 +2628,19 @@ const AppWrapper = observer(() => {
                             id='id-signals'
                         >
                             <ProtectedSignalsCenter />
+                        </div>
+
+                        {/* TRADING ANALYSIS TAB */}
+                        <div
+                            label={
+                                <>
+                                    <TradingAnalysisIcon />
+                                    <Localize i18n_default_text='Trading Analysis' />
+                                </>
+                            }
+                            id='id-trading-analysis'
+                        >
+                            <TradingAnalysisPage />
                         </div>
 
                         {/* FREE BOTS TAB */}
