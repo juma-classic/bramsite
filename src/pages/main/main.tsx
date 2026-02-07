@@ -9,6 +9,7 @@ import MobileWrapper from '@/components/shared_ui/mobile-wrapper';
 import Tabs from '@/components/shared_ui/tabs/tabs';
 import { ProtectedSignalsCenter } from '@/components/signals/ProtectedSignalsCenter';
 import TradingViewModal from '@/components/trading-view-chart/trading-view-modal';
+import { FreeBotsSection } from '@/components/free-bots/FreeBotsSection';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { api_base, updateWorkspaceName } from '@/external/bot-skeleton';
 import { CONNECTION_STATUS } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
@@ -30,101 +31,146 @@ const XDtrader = lazy(() => import('../xdtrader'));
 
 const DashboardIcon = () => (
     <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        <path d='M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z' fill='currentColor' />
-        <path d='M4 4h6v8H4V4zm10 0h6v4h-6V4zM4 15h6v4H4v-4zm10-3h6v8h-6v-8z' fill='currentColor' opacity='0.6' />
-        <circle cx='7' cy='8' r='1.5' fill='#ffd700' />
-        <circle cx='17' cy='6' r='1.5' fill='#ffd700' />
-        <circle cx='7' cy='17' r='1.5' fill='#ffd700' />
-        <circle cx='17' cy='15' r='1.5' fill='#ffd700' />
+        {/* Speedometer/Dashboard gauge */}
+        <circle cx='12' cy='14' r='9' stroke='currentColor' strokeWidth='2' fill='none' />
+        <path d='M12 14L16 8' stroke='#FFD700' strokeWidth='2.5' strokeLinecap='round' />
+        <circle cx='12' cy='14' r='2' fill='#FFD700' />
+        {/* Gauge markers */}
+        <circle cx='6' cy='10' r='1.5' fill='currentColor' opacity='0.6' />
+        <circle cx='18' cy='10' r='1.5' fill='currentColor' opacity='0.6' />
+        <circle cx='4' cy='16' r='1.5' fill='currentColor' opacity='0.6' />
+        <circle cx='20' cy='16' r='1.5' fill='currentColor' opacity='0.6' />
+        <circle cx='8' cy='20' r='1.5' fill='currentColor' opacity='0.6' />
+        <circle cx='16' cy='20' r='1.5' fill='currentColor' opacity='0.6' />
     </svg>
 );
 
 const BotBuilderIcon = () => (
     <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        <rect x='7' y='4' width='10' height='7' rx='1' stroke='currentColor' strokeWidth='2' fill='none' />
-        <rect x='7' y='13' width='10' height='7' rx='1' stroke='currentColor' strokeWidth='2' fill='none' />
-        <circle cx='12' cy='7.5' r='1.5' fill='#ffd700' />
-        <circle cx='12' cy='16.5' r='1.5' fill='#ffd700' />
-        <path d='M12 11V13' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
-        <path d='M9 7.5H7M17 7.5H15M9 16.5H7M17 16.5H15' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
-        <circle cx='5' cy='7.5' r='1' fill='#ffd700' />
-        <circle cx='19' cy='7.5' r='1' fill='#ffd700' />
-        <circle cx='5' cy='16.5' r='1' fill='#ffd700' />
-        <circle cx='19' cy='16.5' r='1' fill='#ffd700' />
+        {/* Robot head */}
+        <rect x='6' y='8' width='12' height='10' rx='2' stroke='currentColor' strokeWidth='2' fill='none' />
+        {/* Antenna */}
+        <path d='M12 8V5M12 5L10 3M12 5L14 3' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+        {/* Eyes */}
+        <circle cx='9' cy='12' r='1.5' fill='#FFD700' />
+        <circle cx='15' cy='12' r='1.5' fill='#FFD700' />
+        {/* Mouth/display */}
+        <rect x='8' y='15' width='8' height='2' rx='1' fill='currentColor' opacity='0.6' />
+        {/* Arms */}
+        <path d='M6 11H4M18 11H20' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+        <circle cx='4' cy='11' r='1' fill='#FFD700' />
+        <circle cx='20' cy='11' r='1' fill='#FFD700' />
     </svg>
 );
 
 const ChartsIcon = () => (
     <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        <path d='M3 3v18h18' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+        {/* Candlestick chart */}
+        <rect x='4' y='8' width='3' height='8' rx='0.5' fill='#FFD700' />
+        <path d='M5.5 8V6M5.5 16V18' stroke='#FFD700' strokeWidth='1.5' strokeLinecap='round' />
+
+        <rect x='10' y='5' width='3' height='10' rx='0.5' fill='currentColor' opacity='0.6' />
+        <path d='M11.5 5V3M11.5 15V17' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' opacity='0.6' />
+
+        <rect x='16' y='10' width='3' height='6' rx='0.5' fill='#FFD700' />
+        <path d='M17.5 10V8M17.5 16V20' stroke='#FFD700' strokeWidth='1.5' strokeLinecap='round' />
+
+        {/* Trend line */}
         <path
-            d='M7 14l3-3 3 3 5-7'
+            d='M2 20L8 14L14 16L22 8'
             stroke='currentColor'
-            strokeWidth='2'
+            strokeWidth='1.5'
             strokeLinecap='round'
-            strokeLinejoin='round'
+            strokeDasharray='2 2'
+            opacity='0.4'
         />
-        <circle cx='7' cy='14' r='1.5' fill='#ffd700' />
-        <circle cx='10' cy='11' r='1.5' fill='#ffd700' />
-        <circle cx='13' cy='14' r='1.5' fill='#ffd700' />
-        <circle cx='18' cy='7' r='1.5' fill='#ffd700' />
-        <path d='M18 7v3m0 0h-3m3 0l-5 7' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' opacity='0.5' />
     </svg>
 );
 
 const TutorialsIcon = () => (
     <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        <rect x='3' y='4' width='18' height='16' rx='2' stroke='currentColor' strokeWidth='2' fill='none' />
-        <path d='M10 9l6 3-6 3V9z' fill='#ffd700' />
-        <circle cx='10' cy='9' r='1' fill='currentColor' opacity='0.6' />
-        <circle cx='16' cy='12' r='1' fill='currentColor' opacity='0.6' />
-        <circle cx='10' cy='15' r='1' fill='currentColor' opacity='0.6' />
-        <path d='M3 7h18M7 4v3M17 4v3' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' opacity='0.5' />
+        {/* Book/Guide */}
+        <path d='M4 4h13a2 2 0 012 2v12a2 2 0 01-2 2H4V4z' stroke='currentColor' strokeWidth='2' fill='none' />
+        <path d='M4 4v16' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+        {/* Pages */}
+        <path d='M8 8h7M8 12h7M8 16h5' stroke='#FFD700' strokeWidth='1.5' strokeLinecap='round' />
+        {/* Bookmark */}
+        <path
+            d='M19 6v14l-3-2-3 2V6'
+            stroke='currentColor'
+            strokeWidth='1.5'
+            fill='none'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+        />
+        <circle cx='16' cy='10' r='1' fill='#FFD700' />
     </svg>
 );
 
 const AnalysisToolIcon = () => (
     <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        <rect x='5' y='7' width='4' height='10' rx='1' stroke='currentColor' strokeWidth='2' fill='none' />
-        <rect x='11' y='4' width='4' height='13' rx='1' stroke='currentColor' strokeWidth='2' fill='none' />
-        <rect x='17' y='9' width='4' height='8' rx='1' stroke='currentColor' strokeWidth='2' fill='none' />
-        <path d='M7 3v4M13 2v2M19 7v2' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' opacity='0.5' />
-        <path d='M7 17v2M13 17v2M19 17v2' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' opacity='0.5' />
-        <circle cx='7' cy='12' r='1.5' fill='#ffd700' />
-        <circle cx='13' cy='10' r='1.5' fill='#ffd700' />
-        <circle cx='19' cy='13' r='1.5' fill='#ffd700' />
+        {/* Magnifying glass with chart */}
+        <circle cx='10' cy='10' r='7' stroke='currentColor' strokeWidth='2' fill='none' />
+        <path d='M15 15l6 6' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+        {/* Mini bar chart inside */}
+        <rect x='7' y='11' width='1.5' height='4' fill='#FFD700' />
+        <rect x='9' y='9' width='1.5' height='6' fill='#FFD700' />
+        <rect x='11' y='7' width='1.5' height='8' fill='#FFD700' />
+        {/* Sparkle */}
+        <circle cx='18' cy='6' r='1.5' fill='#FFD700' opacity='0.6' />
+        <path d='M18 4v4M16 6h4' stroke='#FFD700' strokeWidth='1' opacity='0.6' />
     </svg>
 );
 
 const SignalsIcon = () => (
     <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        <path d='M4 4l4 4-4 4' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
+        {/* Radio/Signal waves */}
+        <circle cx='12' cy='12' r='2' fill='#FFD700' />
         <path
-            d='M4 16l4 4-4 4'
+            d='M8 8C9.5 9.5 9.5 10.5 8 12C9.5 13.5 9.5 14.5 8 16'
             stroke='currentColor'
             strokeWidth='2'
             strokeLinecap='round'
-            strokeLinejoin='round'
-            opacity='0.5'
         />
-        <rect x='10' y='5' width='10' height='3' rx='1' fill='#ffd700' />
-        <rect x='10' y='11' width='7' height='3' rx='1' fill='currentColor' opacity='0.6' />
-        <rect x='10' y='17' width='10' height='3' rx='1' fill='#ffd700' />
-        <circle cx='20' cy='6.5' r='1.5' fill='currentColor' />
-        <circle cx='20' cy='18.5' r='1.5' fill='currentColor' />
+        <path
+            d='M16 8C14.5 9.5 14.5 10.5 16 12C14.5 13.5 14.5 14.5 16 16'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinecap='round'
+        />
+        <path
+            d='M5 5C7.5 7.5 7.5 9 5 12C7.5 15 7.5 16.5 5 19'
+            stroke='#FFD700'
+            strokeWidth='2'
+            strokeLinecap='round'
+            opacity='0.6'
+        />
+        <path
+            d='M19 5C16.5 7.5 16.5 9 19 12C16.5 15 16.5 16.5 19 19'
+            stroke='#FFD700'
+            strokeWidth='2'
+            strokeLinecap='round'
+            opacity='0.6'
+        />
     </svg>
 );
 
 const FreeBotsIcon = () => (
-    <svg
-        fill='var(--text-general)'
-        width='20px'
-        height='20px'
-        viewBox='0 0 24 24'
-        xmlns='http://www.w3.org/2000/svg'
-        data-name='Layer 1'
-    >
-        <path d='M10,13H4a1,1,0,0,0-1,1v6a1,1,0,0,0,1,1h6a1,1,0,0,0,1-1V14A1,1,0,0,0,10,13ZM9,19H5V15H9ZM20,3H14a1,1,0,0,0-1,1v6a1,1,0,0,0,1,1h6a1,1,0,0,0,1-1V4A1,1,0,0,0,20,3ZM19,9H15V5h4Zm1,7H18V14a1,1,0,0,0-2,0v2H14a1,1,0,0,0,0,2h2v2a1,1,0,0,0,2,0V18h2a1,1,0,0,0,0-2ZM10,3H4A1,1,0,0,0,3,4v6a1,1,0,0,0,1,1h6a1,1,0,0,0,1-1V4A1,1,0,0,0,10,3ZM9,9H5V5H9Z' />
+    <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        {/* Gift box with bow */}
+        <rect x='5' y='10' width='14' height='10' rx='1' stroke='currentColor' strokeWidth='2' fill='none' />
+        <path d='M5 10h14v3H5z' fill='#FFD700' opacity='0.6' />
+        <path d='M12 10v10' stroke='currentColor' strokeWidth='2' />
+        <path d='M5 13h14' stroke='currentColor' strokeWidth='1.5' />
+        {/* Bow on top */}
+        <path
+            d='M12 10V8c0-2 2-3 3-2s1 2 0 2h-6c-1 0-1-1 0-2s3 0 3 2v2'
+            stroke='#FFD700'
+            strokeWidth='2'
+            strokeLinecap='round'
+            fill='none'
+        />
+        <circle cx='12' cy='8' r='1.5' fill='#FFD700' />
     </svg>
 );
 
@@ -159,45 +205,44 @@ const RichMotherIcon = () => (
 
 const DAnalysisIcon = () => (
     <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        {/* Background circle */}
-        <circle cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='1.5' fill='none' opacity='0.3' />
-        <circle cx='12' cy='12' r='10' fill='#6366f1' opacity='0.05' />
-
-        {/* Digit circles representing 0-9 */}
-        <circle cx='12' cy='6' r='2' fill='#27ae60' />
-        <circle cx='18' cy='9' r='2' fill='#3498db' />
-        <circle cx='20' cy='15' r='2' fill='#95a5a6' />
-        <circle cx='15' cy='20' r='2' fill='#e74c3c' />
-        <circle cx='9' cy='20' r='2' fill='#f39c12' />
-        <circle cx='4' cy='15' r='2' fill='#95a5a6' />
-        <circle cx='6' cy='9' r='2' fill='#95a5a6' />
-
-        {/* Center analysis symbol */}
-        <circle cx='12' cy='12' r='3' fill='#6366f1' />
-        <text x='12' y='14' textAnchor='middle' fontSize='8' fill='#fff' fontWeight='bold'>
-            DA
+        {/* Calculator/Digit display */}
+        <rect x='4' y='3' width='16' height='18' rx='2' stroke='currentColor' strokeWidth='2' fill='none' />
+        {/* Display screen */}
+        <rect x='6' y='5' width='12' height='4' rx='1' fill='#FFD700' opacity='0.3' />
+        <text x='12' y='8' textAnchor='middle' fontSize='6' fill='#FFD700' fontWeight='bold'>
+            0-9
         </text>
-
-        {/* Statistical lines */}
-        <path d='M8 8L16 16M16 8L8 16' stroke='#6366f1' strokeWidth='1' opacity='0.4' />
+        {/* Number grid */}
+        <circle cx='8' cy='13' r='1.5' fill='currentColor' opacity='0.6' />
+        <circle cx='12' cy='13' r='1.5' fill='#FFD700' />
+        <circle cx='16' cy='13' r='1.5' fill='currentColor' opacity='0.6' />
+        <circle cx='8' cy='17' r='1.5' fill='currentColor' opacity='0.6' />
+        <circle cx='12' cy='17' r='1.5' fill='#FFD700' />
+        <circle cx='16' cy='17' r='1.5' fill='currentColor' opacity='0.6' />
     </svg>
 );
 
 const XDtraderIcon = () => (
     <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        {/* Advanced trading chart background */}
-        <rect x='2' y='4' width='20' height='16' rx='2' stroke='currentColor' strokeWidth='1.5' fill='none' />
-        <rect x='2' y='4' width='20' height='16' rx='2' fill='#8b5cf6' opacity='0.05' />
-
-        {/* Chart grid */}
-        <path d='M2 8h20M2 12h20M2 16h20' stroke='currentColor' strokeWidth='0.5' opacity='0.3' />
-        <path d='M6 4v16M10 4v16M14 4v16M18 4v16' stroke='currentColor' strokeWidth='0.5' opacity='0.3' />
-
-        {/* Advanced candlesticks with different patterns */}
-        <rect x='5' y='9' width='2' height='8' fill='#10b981' />
-        <rect x='9' y='7' width='2' height='10' fill='#ef4444' />
-        <rect x='13' y='11' width='2' height='6' fill='#10b981' />
-        <rect x='17' y='5' width='2' height='12' fill='#ef4444' />
+        {/* Trading terminal screen */}
+        <rect x='2' y='4' width='20' height='16' rx='2' stroke='currentColor' strokeWidth='2' fill='none' />
+        {/* Screen glow */}
+        <rect x='2' y='4' width='20' height='16' rx='2' fill='#FFD700' opacity='0.1' />
+        {/* Chart line */}
+        <path
+            d='M5 15L8 12L11 14L14 9L17 11L20 7'
+            stroke='#FFD700'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+        />
+        {/* Data points */}
+        <circle cx='8' cy='12' r='1.5' fill='#FFD700' />
+        <circle cx='14' cy='9' r='1.5' fill='#FFD700' />
+        <circle cx='20' cy='7' r='1.5' fill='#FFD700' />
+        {/* Status indicators */}
+        <circle cx='5' cy='7' r='1' fill='#10b981' />
+        <circle cx='5' cy='9' r='1' fill='#ef4444' />
 
         {/* Technical indicators */}
         <circle cx='6' cy='13' r='1' fill='#8b5cf6' />
@@ -2580,220 +2625,7 @@ const AppWrapper = observer(() => {
                             }
                             id='id-free-bots'
                         >
-                            <div
-                                className='free-bots'
-                                style={{
-                                    background: '#ffffff',
-                                    position: 'fixed',
-                                    top: '120px',
-                                    left: 0,
-                                    right: 0,
-                                    bottom: '100px',
-                                    width: '100%',
-                                    padding: '2rem',
-                                    margin: 0,
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    overflowY: 'auto',
-                                    overflowX: 'hidden',
-                                    boxShadow: 'inset 0 0 10px rgba(0, 0, 0, 0.05)',
-                                }}
-                            >
-                                <h2
-                                    style={{
-                                        color: '#1a1a2e',
-                                        fontSize: '2rem',
-                                        fontWeight: '700',
-                                        marginBottom: '1.5rem',
-                                        textAlign: 'center',
-                                        borderBottom: '3px solid #0d9488',
-                                        paddingBottom: '1rem',
-                                        flexShrink: 0,
-                                    }}
-                                >
-                                    🤖 Free Trading Bots
-                                </h2>
-                                <ul
-                                    className='free-bots__list'
-                                    style={{
-                                        listStyle: 'none',
-                                        padding: 0,
-                                        margin: 0,
-                                        display: 'grid',
-                                        gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-                                        gap: '1.5rem',
-                                        width: '100%',
-                                        gridAutoRows: 'min-content',
-                                        flex: 1,
-                                        overflowY: 'auto',
-                                        paddingBottom: '8rem',
-                                    }}
-                                >
-                                    {bots.length === 0 ? (
-                                        <li
-                                            style={{
-                                                textAlign: 'center',
-                                                padding: '3rem',
-                                                color: '#6c757d',
-                                                fontSize: '1.1rem',
-                                                gridColumn: '1 / -1',
-                                            }}
-                                        >
-                                            <Localize i18n_default_text='No free bots available.' />
-                                        </li>
-                                    ) : (
-                                        bots.map((bot, index) => (
-                                            <li
-                                                key={index}
-                                                className='free-bot-item'
-                                                style={{
-                                                    background: '#f8f9fa',
-                                                    borderRadius: '16px',
-                                                    padding: '1.5rem',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    gap: '1rem',
-                                                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-                                                    transition: 'all 0.3s ease',
-                                                    cursor: 'pointer',
-                                                    border: '2px solid #e0e0e0',
-                                                }}
-                                                onMouseEnter={e => {
-                                                    e.currentTarget.style.transform = 'translateY(-8px) scale(1.02)';
-                                                    e.currentTarget.style.boxShadow =
-                                                        '0 12px 24px rgba(13, 148, 136, 0.2)';
-                                                    e.currentTarget.style.borderColor = '#0d9488';
-                                                    e.currentTarget.style.background = '#ffffff';
-                                                }}
-                                                onMouseLeave={e => {
-                                                    e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                                                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
-                                                    e.currentTarget.style.borderColor = '#e0e0e0';
-                                                    e.currentTarget.style.background = '#f8f9fa';
-                                                }}
-                                                onClick={() => handleBotClick(bot)}
-                                            >
-                                                <div
-                                                    style={{
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '1rem',
-                                                        width: '100%',
-                                                        pointerEvents: 'none',
-                                                    }}
-                                                >
-                                                    <div
-                                                        style={{
-                                                            width: '40px',
-                                                            height: '40px',
-                                                            borderRadius: '8px',
-                                                            background:
-                                                                'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)',
-                                                            display: 'flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            fontSize: '1.5rem',
-                                                            flexShrink: 0,
-                                                        }}
-                                                    >
-                                                        🤖
-                                                    </div>
-                                                    <h3
-                                                        style={{
-                                                            margin: 0,
-                                                            color: '#1a1a2e',
-                                                            fontSize: '1.1rem',
-                                                            fontWeight: '600',
-                                                            flex: 1,
-                                                            whiteSpace: 'nowrap',
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis',
-                                                        }}
-                                                    >
-                                                        {bot.title || 'Untitled Bot'}
-                                                    </h3>
-                                                </div>
-                                                <p
-                                                    style={{
-                                                        margin: 0,
-                                                        color: '#6c757d',
-                                                        fontSize: '0.9rem',
-                                                        lineHeight: '1.5',
-                                                        display: '-webkit-box',
-                                                        WebkitLineClamp: 2,
-                                                        WebkitBoxOrient: 'vertical',
-                                                        overflow: 'hidden',
-                                                        pointerEvents: 'none',
-                                                    }}
-                                                >
-                                                    Click to load this bot into your workspace
-                                                </p>
-                                                <div
-                                                    style={{
-                                                        display: 'flex',
-                                                        justifyContent: 'space-between',
-                                                        alignItems: 'center',
-                                                        marginTop: 'auto',
-                                                        paddingTop: '0.5rem',
-                                                        borderTop: '1px solid #e0e0e0',
-                                                        pointerEvents: 'none',
-                                                    }}
-                                                >
-                                                    <span
-                                                        style={{
-                                                            fontSize: '0.75rem',
-                                                            color: '#0d9488',
-                                                            fontWeight: '600',
-                                                            textTransform: 'uppercase',
-                                                            letterSpacing: '0.5px',
-                                                        }}
-                                                    >
-                                                        Free
-                                                    </span>
-                                                    <span
-                                                        style={{
-                                                            fontSize: '0.85rem',
-                                                            color: '#0d9488',
-                                                            fontWeight: '500',
-                                                        }}
-                                                    >
-                                                        Load →
-                                                    </span>
-                                                </div>
-                                            </li>
-                                        ))
-                                    )}
-                                </ul>
-                                <style>
-                                    {`
-                                        /* Responsive adjustments */
-                                        @media (max-width: 768px) {
-                                            .free-bots__list {
-                                                grid-template-columns: 1fr !important;
-                                                padding: 1rem !important;
-                                            }
-                                            .free-bot-item h3 {
-                                                font-size: 0.95rem !important;
-                                                white-space: normal !important;
-                                            }
-                                            .free-bot-item p {
-                                                font-size: 0.8rem !important;
-                                            }
-                                        }
-
-                                        /* Extra small screens */
-                                        @media (max-width: 480px) {
-                                            .free-bots__list {
-                                                padding: 0.75rem !important;
-                                                gap: 0.5rem !important;
-                                            }
-                                            .free-bot-item {
-                                                padding: 0.75rem !important;
-                                            }
-                                        }
-                                    `}
-                                </style>
-                            </div>
+                            <FreeBotsSection bots={bots} onBotClick={handleBotClick} />
                         </div>
 
                         {/* RICH MOTHER TAB */}

@@ -169,7 +169,6 @@
     }
 }
 
-
 // Enhanced Modern Navigation Tabs with White Background, Maroon Buttons, Yellow Text
 .dc-tabs--enhanced {
     background: #fff;
@@ -185,11 +184,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(
-            180deg,
-            rgb(128 0 0 / 2%) 0%,
-            transparent 100%
-        );
+        background: linear-gradient(180deg, rgb(30 58 138 / 2%) 0%, transparent 100%);
         pointer-events: none;
     }
 
@@ -219,47 +214,90 @@
         box-shadow: 0 2px 8px rgb(30 58 138 / 20%);
 
         // Ensure all text is white
-        span, div {
+        span,
+        div {
             color: #fff !important;
         }
 
-        // Icon styling
+        // Icon styling - Golden/Yellowish
         svg {
             width: 24px;
             height: 24px;
             transition: all 0.3s ease;
-            filter: drop-shadow(0 2px 4px rgb(0 0 0 / 20%));
-            color: #fff !important;
+            filter: drop-shadow(0 2px 4px rgb(255 215 0 / 40%));
+            color: #ffd700 !important;
+
+            // Make all icon elements golden
+            path,
+            circle,
+            rect,
+            line {
+                stroke: #ffd700 !important;
+            }
+
+            path[fill]:not([fill='none']),
+            circle[fill]:not([fill='none']),
+            rect[fill]:not([fill='none']) {
+                fill: #ffd700 !important;
+            }
         }
 
         // Hover state
         &:hover:not(&--active) {
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-            border-color: rgb(255 255 255 / 30%);
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+            border-color: rgb(255 215 0 / 30%);
             color: #fff;
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgb(30 58 138 / 40%);
 
             svg {
                 transform: scale(1.1);
-                filter: drop-shadow(0 4px 8px rgb(255 255 255 / 30%));
+                filter: drop-shadow(0 4px 8px rgb(255 215 0 / 60%));
+                color: #ffa500 !important;
+
+                path,
+                circle,
+                rect,
+                line {
+                    stroke: #ffa500 !important;
+                }
+
+                path[fill]:not([fill='none']),
+                circle[fill]:not([fill='none']),
+                rect[fill]:not([fill='none']) {
+                    fill: #ffa500 !important;
+                }
             }
         }
 
         // Active state with glow effect
         &--active {
             background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%) !important;
-            border-color: #60a5fa;
+            border-color: #ffd700;
             color: #fff !important;
-            box-shadow: 
+            box-shadow:
                 0 8px 24px rgb(30 58 138 / 50%),
-                0 0 40px rgb(96 165 250 / 30%),
-                inset 0 1px 0 rgb(96 165 250 / 20%);
+                0 0 40px rgb(255 215 0 / 30%),
+                inset 0 1px 0 rgb(255 215 0 / 20%);
             transform: translateY(-3px);
 
             svg {
                 transform: scale(1.15);
-                filter: drop-shadow(0 4px 12px rgb(96 165 250 / 50%));
+                filter: drop-shadow(0 4px 12px rgb(255 215 0 / 70%));
+                color: #ffd700 !important;
+
+                path,
+                circle,
+                rect,
+                line {
+                    stroke: #ffd700 !important;
+                }
+
+                path[fill]:not([fill='none']),
+                circle[fill]:not([fill='none']),
+                rect[fill]:not([fill='none']) {
+                    fill: #ffd700 !important;
+                }
             }
 
             // Active indicator line
@@ -271,7 +309,7 @@
                 transform: translateX(-50%);
                 width: 60%;
                 height: 3px;
-                background: linear-gradient(90deg, transparent, #60a5fa, transparent);
+                background: linear-gradient(90deg, transparent, #ffd700, transparent);
                 border-radius: 2px 2px 0 0;
                 animation: glow-line 2s ease-in-out infinite;
             }
@@ -353,7 +391,8 @@
 
 // Animations
 @keyframes pulse-badge {
-    0%, 100% {
+    0%,
+    100% {
         transform: scale(1);
         box-shadow: 0 2px 8px rgb(239 68 68 / 40%);
     }
@@ -365,7 +404,8 @@
 }
 
 @keyframes glow-line {
-    0%, 100% {
+    0%,
+    100% {
         opacity: 0.6;
         box-shadow: 0 0 10px rgb(96 165 250 / 50%);
     }
