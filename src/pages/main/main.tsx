@@ -11,7 +11,6 @@ import { ProtectedSignalsCenter } from '@/components/signals/ProtectedSignalsCen
 import TradingViewModal from '@/components/trading-view-chart/trading-view-modal';
 import { FreeBotsSection } from '@/components/free-bots/FreeBotsSection';
 import { TradingAnalysisPage } from '@/pages/trading-analysis/TradingAnalysisPage';
-import { DerivAnalysisPage } from '@/pages/deriv-analysis/DerivAnalysisPage';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { api_base, updateWorkspaceName } from '@/external/bot-skeleton';
 import { CONNECTION_STATUS } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
@@ -28,7 +27,6 @@ import RunStrategy from '../dashboard/run-strategy';
 
 const Chart = lazy(() => import('../chart'));
 const Tutorial = lazy(() => import('../tutorials'));
-const DAnalysis = lazy(() => import('../danalysis')); // Blank black page
 const XDtrader = lazy(() => import('../xdtrader'));
 
 const DashboardIcon = () => (
@@ -219,25 +217,6 @@ const RichMotherIcon = () => (
     </svg>
 );
 
-const DAnalysisIcon = () => (
-    <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        {/* Calculator/Digit display */}
-        <rect x='4' y='3' width='16' height='18' rx='2' stroke='currentColor' strokeWidth='2' fill='none' />
-        {/* Display screen */}
-        <rect x='6' y='5' width='12' height='4' rx='1' fill='#FFD700' opacity='0.3' />
-        <text x='12' y='8' textAnchor='middle' fontSize='6' fill='#FFD700' fontWeight='bold'>
-            0-9
-        </text>
-        {/* Number grid */}
-        <circle cx='8' cy='13' r='1.5' fill='currentColor' opacity='0.6' />
-        <circle cx='12' cy='13' r='1.5' fill='#FFD700' />
-        <circle cx='16' cy='13' r='1.5' fill='currentColor' opacity='0.6' />
-        <circle cx='8' cy='17' r='1.5' fill='currentColor' opacity='0.6' />
-        <circle cx='12' cy='17' r='1.5' fill='#FFD700' />
-        <circle cx='16' cy='17' r='1.5' fill='currentColor' opacity='0.6' />
-    </svg>
-);
-
 const XDtraderIcon = () => (
     <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
         {/* Trading terminal screen */}
@@ -274,27 +253,6 @@ const XDtraderIcon = () => (
         <text x='18.5' y='4' textAnchor='middle' fontSize='5' fill='#fff' fontWeight='bold'>
             xDT
         </text>
-    </svg>
-);
-
-const DerivAnalysisIcon = () => (
-    <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
-        {/* Deriv logo inspired design */}
-        <circle cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='2' fill='none' />
-        {/* D letter with chart */}
-        <path
-            d='M8 8h3c2 0 3 1 3 4s-1 4-3 4H8V8z'
-            stroke='#FFD700'
-            strokeWidth='2'
-            fill='none'
-            strokeLinecap='round'
-            strokeLinejoin='round'
-        />
-        {/* Chart overlay */}
-        <path d='M15 10l2 -1l2 2l2 -2' stroke='#FFD700' strokeWidth='1.5' strokeLinecap='round' opacity='0.8' />
-        {/* Sparkle */}
-        <circle cx='19' cy='5' r='1.5' fill='#FFD700' />
-        <circle cx='5' cy='19' r='1' fill='#FFD700' opacity='0.6' />
     </svg>
 );
 
@@ -2034,25 +1992,6 @@ const AppWrapper = observer(() => {
                             </Suspense>
                         </div>
 
-                        {/* DANALYSIS TAB */}
-                        <div
-                            label={
-                                <>
-                                    <DAnalysisIcon />
-                                    <Localize i18n_default_text='DAnalysis' />
-                                </>
-                            }
-                            id='id-danalysis'
-                        >
-                            <div className='danalysis-container'>
-                                <Suspense
-                                    fallback={<ChunkLoader message={localize('Please wait, loading DAnalysis...')} />}
-                                >
-                                    <DAnalysis />
-                                </Suspense>
-                            </div>
-                        </div>
-
                         {/* XDTRADER TAB */}
                         <div
                             label={
@@ -2071,12 +2010,12 @@ const AppWrapper = observer(() => {
                                 </Suspense>
                             </div>
                         </div>
-                        {/* ANALYSIS TOOL TAB */}
+                        {/* DIGIT FREQUENCY TAB */}
                         <div
                             label={
                                 <>
                                     <AnalysisToolIcon />
-                                    <Localize i18n_default_text='Analysis Tool' />
+                                    <Localize i18n_default_text='Digit Frequency' />
                                 </>
                             }
                             id='id-analysis-tool'
@@ -2652,30 +2591,17 @@ const AppWrapper = observer(() => {
                             <ProtectedSignalsCenter />
                         </div>
 
-                        {/* TRADING ANALYSIS TAB */}
+                        {/* PERCENTAGE TOOL TAB */}
                         <div
                             label={
                                 <>
                                     <TradingAnalysisIcon />
-                                    <Localize i18n_default_text='Trading Analysis' />
+                                    <Localize i18n_default_text='Percentage Tool' />
                                 </>
                             }
                             id='id-trading-analysis'
                         >
                             <TradingAnalysisPage />
-                        </div>
-
-                        {/* DERIV ANALYSIS TAB */}
-                        <div
-                            label={
-                                <>
-                                    <DerivAnalysisIcon />
-                                    <Localize i18n_default_text='Deriv Analysis' />
-                                </>
-                            }
-                            id='id-deriv-analysis'
-                        >
-                            <DerivAnalysisPage />
                         </div>
 
                         {/* FREE BOTS TAB */}
