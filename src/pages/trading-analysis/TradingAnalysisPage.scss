@@ -52,7 +52,7 @@
     padding: 1.5rem;
     box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1.5rem;
 
     .config-field {

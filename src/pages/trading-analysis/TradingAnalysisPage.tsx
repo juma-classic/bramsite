@@ -10,6 +10,7 @@ export const TradingAnalysisPage: React.FC = () => {
     const [market, setMarket] = useState('Volatility 10 Index');
     const [tickType, setTickType] = useState('Even/Odd');
     const [numberOfTicks, setNumberOfTicks] = useState(1000);
+    const [barrier, setBarrier] = useState(5); // For Over/Under
     const [ticks, setTicks] = useState<TickData[]>([]);
     const [currentPrice, setCurrentPrice] = useState(5402.31);
     const [stat1Count, setStat1Count] = useState(60);
@@ -23,7 +24,11 @@ export const TradingAnalysisPage: React.FC = () => {
             case 'Rise/Fall':
                 return { label1: 'Rise', label2: 'Fall', pattern: 'Rise/Fall Pattern' };
             case 'Over/Under':
-                return { label1: 'Over', label2: 'Under', pattern: 'Over/Under Pattern' };
+                return {
+                    label1: `Over ${barrier}`,
+                    label2: `Under ${barrier + 1}`,
+                    pattern: `Over/Under ${barrier} Pattern`,
+                };
             case 'Matches/Differs':
                 return { label1: 'Matches', label2: 'Differs', pattern: 'Matches/Differs Pattern' };
             default:
@@ -70,9 +75,9 @@ export const TradingAnalysisPage: React.FC = () => {
                     break;
                 case 'Over/Under':
                     newTicks.forEach(tick => {
-                        if (tick.value > 4)
-                            count1++; // Over 4
-                        else count2++; // Under 5
+                        if (tick.value > barrier)
+                            count1++; // Over barrier
+                        else count2++; // Under barrier+1
                     });
                     break;
                 case 'Matches/Differs':
@@ -96,7 +101,7 @@ export const TradingAnalysisPage: React.FC = () => {
         // Auto-refresh every 2 seconds
         const interval = setInterval(generateTicks, 2000);
         return () => clearInterval(interval);
-    }, [tickType, numberOfTicks]);
+    }, [tickType, numberOfTicks, barrier]);
 
     const getTickDisplay = (tick: TickData, index: number) => {
         switch (tickType) {
@@ -106,7 +111,7 @@ export const TradingAnalysisPage: React.FC = () => {
                 if (index === 0) return '-';
                 return tick.value > ticks[index - 1].value ? '↑' : '↓';
             case 'Over/Under':
-                return tick.value > 4 ? 'O' : 'U';
+                return tick.value > barrier ? 'O' : 'U';
             case 'Matches/Differs':
                 return tick.value === 5 ? 'M' : 'D';
             default:
@@ -122,7 +127,7 @@ export const TradingAnalysisPage: React.FC = () => {
                 if (index === 0) return '#94a3b8';
                 return tick.value > ticks[index - 1].value ? '#10b981' : '#ef4444';
             case 'Over/Under':
-                return tick.value > 4 ? '#10b981' : '#ef4444';
+                return tick.value > barrier ? '#10b981' : '#ef4444';
             case 'Matches/Differs':
                 return tick.value === 5 ? '#10b981' : '#ef4444';
             default:
@@ -171,6 +176,23 @@ export const TradingAnalysisPage: React.FC = () => {
                             <option>Matches/Differs</option>
                         </select>
                     </div>
+                    {tickType === 'Over/Under' && (
+                        <div className='config-field'>
+                            <label>Barrier (Last Digit)</label>
+                            <select value={barrier} onChange={e => setBarrier(Number(e.target.value))}>
+                                <option value={0}>0</option>
+                                <option value={1}>1</option>
+                                <option value={2}>2</option>
+                                <option value={3}>3</option>
+                                <option value={4}>4</option>
+                                <option value={5}>5</option>
+                                <option value={6}>6</option>
+                                <option value={7}>7</option>
+                                <option value={8}>8</option>
+                                <option value={9}>9</option>
+                            </select>
+                        </div>
+                    )}
                     <div className='config-field'>
                         <label>Number of Ticks to Analyze</label>
                         <input
