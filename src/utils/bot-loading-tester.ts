@@ -61,8 +61,6 @@ class BotLoadingTester {
         const botFiles = [
             'CFX-EvenOdd.xml', // Primary Raziel bot
             'Raziel Over Under.xml',
-            'Game Changer AI - etrades.xml',
-            'Random LDP Differ - States FX.xml',
             'CFX-RiseFall.xml',
         ];
 

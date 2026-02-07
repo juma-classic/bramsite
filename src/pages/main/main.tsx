@@ -258,9 +258,6 @@ const AppWrapper = observer(() => {
             const botFiles = [
                 // Core Trading Bots
                 'PATEL (with Entry).xml', // Added to top of the list
-                'Game Changer AI (1).xml', // NEW: Game Changer AI bot
-                'Game Changer AI -  State FX.xml', // NEW: Game Changer AI - States FX version
-                'Random LDP Differ -  State FX.xml', // NEW: Random LDP Differ bot
 
                 // CFX Series Bots
                 'CFX-025-Base.xml',
@@ -274,10 +271,7 @@ const AppWrapper = observer(() => {
                 'CFX-RiseFall.xml',
 
                 // Professional Trading Bots
-                'Digit-Hunter-Pro.xml',
                 'MatchesMaster.xml',
-                'MarketMakerPro-Enhanced.xml',
-                'MarketMakerPro.xml',
                 'Deriv Killer -  State FX.xml',
                 'SpeedHunter.xml',
 

@@ -163,27 +163,6 @@ class SignalBotLoaderService {
         // Multi-Strategy Bots
         MULTI_STRATEGY: [
             {
-                file: 'Game Changer AI - etrades.xml',
-                name: 'Game Changer AI - etrades',
-                description: 'Advanced AI-powered multi-strategy bot with enhanced trading algorithms',
-                suitability: 95,
-                minConfidence: 70,
-            },
-            {
-                file: 'Digit-Hunter-Pro.xml',
-                name: 'Digit Hunter Pro',
-                description: 'Professional multi-strategy digit hunting bot',
-                suitability: 92,
-                minConfidence: 70,
-            },
-            {
-                file: 'MarketMakerPro-Enhanced.xml',
-                name: 'MarketMaker Pro Enhanced',
-                description: 'Enhanced market making bot with multiple strategies',
-                suitability: 88,
-                minConfidence: 65,
-            },
-            {
                 file: 'Deriv Killer - States FX.xml',
                 name: 'Deriv Killer',
                 description: 'High-performance multi-strategy bot',
