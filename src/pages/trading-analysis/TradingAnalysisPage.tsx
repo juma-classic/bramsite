@@ -69,15 +69,24 @@ export const TradingAnalysisPage: React.FC = () => {
 
     // Subscribe to market data when API is ready
     useEffect(() => {
-        if (!isApiReady) return;
+        if (!isApiReady) {
+            console.log('⏸️ API not ready yet, waiting...');
+            return;
+        }
 
         const symbol = MARKET_SYMBOLS[market];
-        console.log('📊 Subscribing to:', symbol, 'for market:', market);
+        console.log('📊 Starting subscription process for:', symbol, 'market:', market);
+        console.log('🔍 API base status:', {
+            hasApi: !!api_base.api,
+            canSend: typeof api_base.api?.send === 'function',
+            canSubscribe: typeof api_base.api?.onMessage === 'function',
+        });
 
         const subscribe = async () => {
             try {
                 // Unsubscribe from previous if exists
                 if (subscriptionIdRef.current) {
+                    console.log('🔌 Unsubscribing from previous subscription:', subscriptionIdRef.current);
                     await derivAPIService.unsubscribe(subscriptionIdRef.current);
                     subscriptionIdRef.current = null;
                 }
@@ -88,6 +97,8 @@ export const TradingAnalysisPage: React.FC = () => {
                 setCurrentPrice(0);
                 setIsSubscribed(false);
 
+                console.log('📞 Calling getTicksHistory for:', symbol);
+
                 // Get tick history
                 const historyResponse = await derivAPIService.getTicksHistory({
                     symbol,
@@ -96,11 +107,19 @@ export const TradingAnalysisPage: React.FC = () => {
                     style: 'ticks',
                 });
 
-                console.log('📜 Received tick history:', historyResponse);
+                console.log('📜 Received tick history response:', {
+                    hasResponse: !!historyResponse,
+                    hasHistory: !!historyResponse?.history,
+                    priceCount: historyResponse?.history?.prices?.length || 0,
+                    firstPrice: historyResponse?.history?.prices?.[0],
+                    lastPrice: historyResponse?.history?.prices?.[historyResponse?.history?.prices?.length - 1],
+                });
 
                 if (historyResponse?.history) {
                     const prices = historyResponse.history.prices;
                     const times = historyResponse.history.times;
+
+                    console.log('✅ Processing', prices.length, 'historical ticks');
 
                     const historyTicks: TickData[] = prices.map((price: number, index: number) => ({
                         value: extractLastDigit(price),
@@ -111,23 +130,32 @@ export const TradingAnalysisPage: React.FC = () => {
                     tickHistoryRef.current = historyTicks;
                     setTicks(historyTicks.slice(-20));
                     if (prices.length > 0) {
-                        setCurrentPrice(prices[prices.length - 1]);
-                        console.log('💰 Initial price:', prices[prices.length - 1]);
+                        const latestPrice = prices[prices.length - 1];
+                        setCurrentPrice(latestPrice);
+                        console.log('💰 Set current price to:', latestPrice);
                     }
                     calculateStatistics(historyTicks);
                     setErrorMessage('');
                 } else {
-                    console.warn('⚠️ No history data received');
-                    setErrorMessage('No historical data available');
+                    console.warn('⚠️ No history data in response:', historyResponse);
+                    setErrorMessage('No historical data available for ' + market);
                 }
+
+                console.log('📡 Now subscribing to live ticks for:', symbol);
 
                 // Subscribe to live ticks
                 const subscriptionId = await derivAPIService.subscribeToTicks(symbol, response => {
+                    console.log('🔔 Received tick update:', {
+                        hasTick: !!response.tick,
+                        symbol: response.tick?.symbol,
+                        quote: response.tick?.quote,
+                    });
+
                     if (response.tick && response.tick.symbol === symbol) {
                         const price = response.tick.quote;
                         const lastDigit = extractLastDigit(price);
 
-                        console.log('🔄 New tick:', price, 'digit:', lastDigit);
+                        console.log('🔄 Processing new tick - Price:', price, 'Digit:', lastDigit);
 
                         const newTick: TickData = {
                             value: lastDigit,
@@ -138,17 +166,30 @@ export const TradingAnalysisPage: React.FC = () => {
                         tickHistoryRef.current = [...tickHistoryRef.current, newTick].slice(-numberOfTicks);
                         setTicks(tickHistoryRef.current.slice(-20));
                         setCurrentPrice(price);
+                        console.log('💰 Updated current price to:', price);
                         calculateStatistics(tickHistoryRef.current);
                     }
+                });
+
+                console.log('🔗 Subscription result:', {
+                    hasSubscriptionId: !!subscriptionId,
+                    subscriptionId,
                 });
 
                 if (subscriptionId) {
                     subscriptionIdRef.current = subscriptionId;
                     setIsSubscribed(true);
                     console.log('✅ Successfully subscribed with ID:', subscriptionId);
+                } else {
+                    console.error('❌ No subscription ID returned');
+                    setErrorMessage('Failed to subscribe to live data');
                 }
             } catch (error) {
                 console.error('❌ Failed to subscribe:', error);
+                console.error('❌ Error details:', {
+                    message: error instanceof Error ? error.message : String(error),
+                    stack: error instanceof Error ? error.stack : undefined,
+                });
                 setIsSubscribed(false);
                 setErrorMessage(
                     isLoggedIn
@@ -162,13 +203,15 @@ export const TradingAnalysisPage: React.FC = () => {
 
         return () => {
             if (subscriptionIdRef.current) {
-                console.log('🔌 Unsubscribing from:', symbol);
-                derivAPIService.unsubscribe(subscriptionIdRef.current).catch(console.error);
+                console.log('🔌 Unsubscribing from:', symbol, 'ID:', subscriptionIdRef.current);
+                derivAPIService.unsubscribe(subscriptionIdRef.current).catch(err => {
+                    console.error('Error unsubscribing:', err);
+                });
                 subscriptionIdRef.current = null;
             }
             setIsSubscribed(false);
         };
-    }, [isApiReady, market, numberOfTicks]);
+    }, [isApiReady, market, numberOfTicks, isLoggedIn]);
 
     // Get labels based on tick type
     const getLabels = () => {
