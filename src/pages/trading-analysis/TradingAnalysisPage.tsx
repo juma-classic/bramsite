@@ -446,6 +446,19 @@ export const TradingAnalysisPage: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Deriv Chart Integration */}
+                <div className='chart-section'>
+                    <h3>Live Market Chart</h3>
+                    <div className='chart-container'>
+                        <iframe
+                            src={`https://charts.deriv.com/?symbol=${MARKET_SYMBOLS[market]}&interval=1t&theme=dark`}
+                            title={`${market} Chart`}
+                            className='deriv-chart-iframe'
+                            allow='fullscreen'
+                        />
+                    </div>
+                </div>
+
                 {/* Probability Analysis */}
                 <div className='probability-section'>
                     <h3>Probability Analysis</h3>
