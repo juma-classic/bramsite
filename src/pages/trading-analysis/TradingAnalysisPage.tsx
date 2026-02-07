@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { derivAPIService } from '@/services/deriv-api.service';
+import React, { useState, useEffect } from 'react';
+import { useTickPointer } from '@/hooks/useTickPointer';
 import './TradingAnalysisPage.scss';
 
 interface TickData {
@@ -30,13 +30,15 @@ export const TradingAnalysisPage: React.FC = () => {
     const [numberOfTicks, setNumberOfTicks] = useState(1000);
     const [barrier, setBarrier] = useState(5); // For Over/Under
     const [ticks, setTicks] = useState<TickData[]>([]);
-    const [currentPrice, setCurrentPrice] = useState(0);
     const [stat1Count, setStat1Count] = useState(0);
     const [stat2Count, setStat2Count] = useState(0);
-    const [isConnected, setIsConnected] = useState(false);
-    const subscriptionIdRef = useRef<string | null>(null);
-    const tickHistoryRef = useRef<TickData[]>([]);
-    const currentSymbolRef = useRef<string>('');
+
+    // Use the same hook as Metatron Analysis Tool
+    const symbol = MARKET_SYMBOLS[market];
+    const { currentTick, tickHistory, isSubscribed } = useTickPointer(symbol, true);
+
+    // Get current price from the latest tick
+    const currentPrice = currentTick?.quote || 0;
 
     // Get labels based on tick type
     const getLabels = () => {
@@ -60,138 +62,56 @@ export const TradingAnalysisPage: React.FC = () => {
 
     const labels = getLabels();
 
-    // Extract last digit from price
-    const extractLastDigit = (price: number): number => {
-        const priceStr = price.toString();
-        const lastChar = priceStr.charAt(priceStr.length - 1);
-        return parseInt(lastChar, 10);
-    };
-
-    // Subscribe to Deriv API using proper service
+    // Update ticks display when tickHistory changes
     useEffect(() => {
-        const symbol = MARKET_SYMBOLS[market];
-        currentSymbolRef.current = symbol;
+        if (tickHistory.length > 0) {
+            // Convert tickHistory to our TickData format
+            const formattedTicks: TickData[] = tickHistory.slice(0, 20).map(tick => ({
+                value: tick.lastDigit,
+                timestamp: tick.timestamp,
+                price: tick.quote,
+            }));
 
-        const subscribe = async () => {
-            try {
-                // Unsubscribe from previous subscription if exists
-                if (subscriptionIdRef.current) {
-                    await derivAPIService.unsubscribe(subscriptionIdRef.current);
-                    subscriptionIdRef.current = null;
-                }
-
-                // Reset data for new market
-                tickHistoryRef.current = [];
-                setTicks([]);
-                setCurrentPrice(0);
-                setIsConnected(false);
-
-                console.log('Subscribing to market:', market, 'symbol:', symbol);
-
-                // Get tick history first
-                const historyResponse = await derivAPIService.getTicksHistory({
-                    symbol,
-                    count: Math.min(numberOfTicks, 5000),
-                    end: 'latest',
-                    style: 'ticks',
-                });
-
-                if (historyResponse.history && currentSymbolRef.current === symbol) {
-                    const prices = historyResponse.history.prices;
-                    const times = historyResponse.history.times;
-
-                    const historyTicks: TickData[] = prices.map((price: number, index: number) => ({
-                        value: extractLastDigit(price),
-                        timestamp: times[index] * 1000,
-                        price,
-                    }));
-
-                    tickHistoryRef.current = historyTicks;
-                    setTicks(historyTicks.slice(-20));
-                    if (prices.length > 0) {
-                        setCurrentPrice(prices[prices.length - 1]);
-                    }
-                    calculateStatistics(historyTicks);
-                }
-
-                // Subscribe to live ticks
-                const subscriptionId = await derivAPIService.subscribeToTicks(symbol, response => {
-                    // Only process if still subscribed to this symbol
-                    if (currentSymbolRef.current !== symbol) {
-                        return;
-                    }
-
-                    if (response.tick && response.tick.symbol === symbol) {
-                        const price = response.tick.quote;
-                        const lastDigit = extractLastDigit(price);
-
-                        const newTick: TickData = {
-                            value: lastDigit,
-                            timestamp: response.tick.epoch * 1000,
-                            price,
-                        };
-
-                        tickHistoryRef.current = [...tickHistoryRef.current, newTick].slice(
-                            -Math.min(numberOfTicks, 5000)
-                        );
-                        setTicks(tickHistoryRef.current.slice(-20));
-                        setCurrentPrice(price);
-                        calculateStatistics(tickHistoryRef.current);
-                    }
-                });
-
-                if (subscriptionId && currentSymbolRef.current === symbol) {
-                    subscriptionIdRef.current = subscriptionId;
-                    setIsConnected(true);
-                    console.log('Successfully subscribed to:', symbol);
-                }
-            } catch (error) {
-                console.error('Failed to subscribe to ticks:', error);
-                setIsConnected(false);
-            }
-        };
-
-        subscribe();
-
-        // Cleanup function
-        return () => {
-            if (subscriptionIdRef.current) {
-                derivAPIService.unsubscribe(subscriptionIdRef.current).catch(console.error);
-                subscriptionIdRef.current = null;
-            }
-            setIsConnected(false);
-        };
-    }, [market, numberOfTicks]);
+            setTicks(formattedTicks);
+            calculateStatistics(tickHistory.slice(0, Math.min(numberOfTicks, tickHistory.length)));
+        }
+    }, [tickHistory.length, tickType, barrier, numberOfTicks]);
 
     // Calculate statistics based on tick type
-    const calculateStatistics = (tickData: TickData[]) => {
+    const calculateStatistics = (tickData: any[]) => {
         let count1 = 0;
         let count2 = 0;
 
         switch (tickType) {
             case 'Even/Odd':
                 tickData.forEach(tick => {
-                    if (tick.value % 2 === 0) count1++;
+                    const digit = tick.lastDigit !== undefined ? tick.lastDigit : tick.value;
+                    if (digit % 2 === 0) count1++;
                     else count2++;
                 });
                 break;
             case 'Rise/Fall':
                 for (let i = 1; i < tickData.length; i++) {
-                    if (tickData[i].value > tickData[i - 1].value) count1++;
+                    const digit1 = tickData[i].lastDigit !== undefined ? tickData[i].lastDigit : tickData[i].value;
+                    const digit2 =
+                        tickData[i - 1].lastDigit !== undefined ? tickData[i - 1].lastDigit : tickData[i - 1].value;
+                    if (digit1 > digit2) count1++;
                     else count2++;
                 }
                 break;
             case 'Over/Under':
                 tickData.forEach(tick => {
-                    if (tick.value > barrier)
+                    const digit = tick.lastDigit !== undefined ? tick.lastDigit : tick.value;
+                    if (digit > barrier)
                         count1++; // Over barrier
-                    else if (tick.value < barrier) count2++; // Under barrier
+                    else if (digit < barrier) count2++; // Under barrier
                 });
                 break;
             case 'Matches/Differs':
                 const targetDigit = 5;
                 tickData.forEach(tick => {
-                    if (tick.value === targetDigit) count1++;
+                    const digit = tick.lastDigit !== undefined ? tick.lastDigit : tick.value;
+                    if (digit === targetDigit) count1++;
                     else count2++;
                 });
                 break;
@@ -203,13 +123,6 @@ export const TradingAnalysisPage: React.FC = () => {
             setStat2Count(Math.round((count2 / total) * 100));
         }
     };
-
-    // Recalculate statistics when tick type or barrier changes
-    useEffect(() => {
-        if (tickHistoryRef.current.length > 0) {
-            calculateStatistics(tickHistoryRef.current);
-        }
-    }, [tickType, barrier]);
 
     const getTickDisplay = (tick: TickData, index: number) => {
         switch (tickType) {
@@ -320,8 +233,8 @@ export const TradingAnalysisPage: React.FC = () => {
                 {/* Current Price Display */}
                 <div className='price-display'>
                     <div className='connection-status'>
-                        <span className={`status-indicator ${isConnected ? 'connected' : 'disconnected'}`}></span>
-                        <span className='status-text'>{isConnected ? 'Live Data' : 'Connecting...'}</span>
+                        <span className={`status-indicator ${isSubscribed ? 'connected' : 'disconnected'}`}></span>
+                        <span className='status-text'>{isSubscribed ? 'Live Data' : 'Connecting...'}</span>
                     </div>
                     <div className='market-name'>{market}</div>
                     <div className='price-label'>CURRENT PRICE</div>
