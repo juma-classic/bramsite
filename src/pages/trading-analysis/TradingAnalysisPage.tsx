@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { derivAPIService } from '@/services/deriv-api.service';
 import './TradingAnalysisPage.scss';
 
 interface TickData {
     value: number;
     timestamp: number;
+    price: number;
 }
 
 // Map display names to Deriv API symbols
@@ -32,8 +34,9 @@ export const TradingAnalysisPage: React.FC = () => {
     const [stat1Count, setStat1Count] = useState(0);
     const [stat2Count, setStat2Count] = useState(0);
     const [isConnected, setIsConnected] = useState(false);
-    const wsRef = useRef<WebSocket | null>(null);
+    const subscriptionIdRef = useRef<string | null>(null);
     const tickHistoryRef = useRef<TickData[]>([]);
+    const currentSymbolRef = useRef<string>('');
 
     // Get labels based on tick type
     const getLabels = () => {
@@ -57,96 +60,106 @@ export const TradingAnalysisPage: React.FC = () => {
 
     const labels = getLabels();
 
-    // Connect to Deriv WebSocket API
+    // Extract last digit from price
+    const extractLastDigit = (price: number): number => {
+        const priceStr = price.toString();
+        const lastChar = priceStr.charAt(priceStr.length - 1);
+        return parseInt(lastChar, 10);
+    };
+
+    // Subscribe to Deriv API using proper service
     useEffect(() => {
-        const connectWebSocket = () => {
-            const ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');
-            wsRef.current = ws;
+        const symbol = MARKET_SYMBOLS[market];
+        currentSymbolRef.current = symbol;
 
-            ws.onopen = () => {
-                console.log('Connected to Deriv WebSocket');
-                setIsConnected(true);
+        const subscribe = async () => {
+            try {
+                // Unsubscribe from previous subscription if exists
+                if (subscriptionIdRef.current) {
+                    await derivAPIService.unsubscribe(subscriptionIdRef.current);
+                    subscriptionIdRef.current = null;
+                }
 
-                // Subscribe to tick stream
-                const symbol = MARKET_SYMBOLS[market];
-                ws.send(
-                    JSON.stringify({
-                        ticks: symbol,
-                        subscribe: 1,
-                    })
-                );
+                // Reset data for new market
+                tickHistoryRef.current = [];
+                setTicks([]);
+                setCurrentPrice(0);
+                setIsConnected(false);
 
-                // Request tick history
-                ws.send(
-                    JSON.stringify({
-                        ticks_history: symbol,
-                        count: Math.min(numberOfTicks, 5000),
-                        end: 'latest',
-                        style: 'ticks',
-                    })
-                );
-            };
+                console.log('Subscribing to market:', market, 'symbol:', symbol);
 
-            ws.onmessage = event => {
-                const data = JSON.parse(event.data);
+                // Get tick history first
+                const historyResponse = await derivAPIService.getTicksHistory({
+                    symbol,
+                    count: Math.min(numberOfTicks, 5000),
+                    end: 'latest',
+                    style: 'ticks',
+                });
 
-                // Handle tick history response
-                if (data.msg_type === 'history') {
-                    const prices = data.history.prices;
-                    const times = data.history.times;
+                if (historyResponse.history && currentSymbolRef.current === symbol) {
+                    const prices = historyResponse.history.prices;
+                    const times = historyResponse.history.times;
 
-                    const historyTicks: TickData[] = prices.map((price: number, index: number) => {
-                        const lastDigit = Math.floor(price * 100) % 10;
-                        return {
-                            value: lastDigit,
-                            timestamp: times[index] * 1000,
-                        };
-                    });
+                    const historyTicks: TickData[] = prices.map((price: number, index: number) => ({
+                        value: extractLastDigit(price),
+                        timestamp: times[index] * 1000,
+                        price,
+                    }));
 
                     tickHistoryRef.current = historyTicks;
-                    setTicks(historyTicks.slice(-20)); // Show last 20 ticks
+                    setTicks(historyTicks.slice(-20));
                     if (prices.length > 0) {
                         setCurrentPrice(prices[prices.length - 1]);
                     }
                     calculateStatistics(historyTicks);
                 }
 
-                // Handle live tick updates
-                if (data.msg_type === 'tick') {
-                    const price = data.tick.quote;
-                    const lastDigit = Math.floor(price * 100) % 10;
+                // Subscribe to live ticks
+                const subscriptionId = await derivAPIService.subscribeToTicks(symbol, response => {
+                    // Only process if still subscribed to this symbol
+                    if (currentSymbolRef.current !== symbol) {
+                        return;
+                    }
 
-                    const newTick: TickData = {
-                        value: lastDigit,
-                        timestamp: data.tick.epoch * 1000,
-                    };
+                    if (response.tick && response.tick.symbol === symbol) {
+                        const price = response.tick.quote;
+                        const lastDigit = extractLastDigit(price);
 
-                    tickHistoryRef.current = [...tickHistoryRef.current, newTick].slice(-Math.min(numberOfTicks, 5000));
-                    setTicks(tickHistoryRef.current.slice(-20));
-                    setCurrentPrice(price);
-                    calculateStatistics(tickHistoryRef.current);
+                        const newTick: TickData = {
+                            value: lastDigit,
+                            timestamp: response.tick.epoch * 1000,
+                            price,
+                        };
+
+                        tickHistoryRef.current = [...tickHistoryRef.current, newTick].slice(
+                            -Math.min(numberOfTicks, 5000)
+                        );
+                        setTicks(tickHistoryRef.current.slice(-20));
+                        setCurrentPrice(price);
+                        calculateStatistics(tickHistoryRef.current);
+                    }
+                });
+
+                if (subscriptionId && currentSymbolRef.current === symbol) {
+                    subscriptionIdRef.current = subscriptionId;
+                    setIsConnected(true);
+                    console.log('Successfully subscribed to:', symbol);
                 }
-            };
-
-            ws.onerror = error => {
-                console.error('WebSocket error:', error);
+            } catch (error) {
+                console.error('Failed to subscribe to ticks:', error);
                 setIsConnected(false);
-            };
-
-            ws.onclose = () => {
-                console.log('WebSocket disconnected');
-                setIsConnected(false);
-                // Reconnect after 3 seconds
-                setTimeout(connectWebSocket, 3000);
-            };
+            }
         };
 
-        connectWebSocket();
+        subscribe();
 
+        // Cleanup function
         return () => {
-            if (wsRef.current) {
-                wsRef.current.close();
+            if (subscriptionIdRef.current) {
+                derivAPIService.unsubscribe(subscriptionIdRef.current).catch(console.error);
+                subscriptionIdRef.current = null;
             }
+            setIsConnected(false);
         };
     }, [market, numberOfTicks]);
 
@@ -310,6 +323,7 @@ export const TradingAnalysisPage: React.FC = () => {
                         <span className={`status-indicator ${isConnected ? 'connected' : 'disconnected'}`}></span>
                         <span className='status-text'>{isConnected ? 'Live Data' : 'Connecting...'}</span>
                     </div>
+                    <div className='market-name'>{market}</div>
                     <div className='price-label'>CURRENT PRICE</div>
                     <div className='price-value'>{currentPrice > 0 ? currentPrice.toFixed(2) : '---'}</div>
                     <div className='price-stats'>
