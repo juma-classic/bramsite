@@ -92,6 +92,50 @@
     text-align: center;
     color: #fff;
     box-shadow: 0 4px 16px rgb(30 58 138 / 20%);
+    position: relative;
+
+    .connection-status {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+
+            &.connected {
+                background: #10b981;
+                box-shadow: 0 0 8px #10b981;
+            }
+
+            &.disconnected {
+                background: #ef4444;
+                box-shadow: 0 0 8px #ef4444;
+            }
+        }
+
+        .status-text {
+            opacity: 0.9;
+        }
+    }
+
+    @keyframes pulse {
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+    }
 
     .price-label {
         font-size: 0.75rem;

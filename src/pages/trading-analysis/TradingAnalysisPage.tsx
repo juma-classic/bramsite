@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './TradingAnalysisPage.scss';
 
 interface TickData {
@@ -6,15 +6,34 @@ interface TickData {
     timestamp: number;
 }
 
+// Map display names to Deriv API symbols
+const MARKET_SYMBOLS: { [key: string]: string } = {
+    'Volatility 10 Index': 'R_10',
+    'Volatility 10 (1s) Index': '1HZ10V',
+    'Volatility 25 Index': 'R_25',
+    'Volatility 25 (1s) Index': '1HZ25V',
+    'Volatility 50 Index': 'R_50',
+    'Volatility 50 (1s) Index': '1HZ50V',
+    'Volatility 75 Index': 'R_75',
+    'Volatility 75 (1s) Index': '1HZ75V',
+    'Volatility 100 Index': 'R_100',
+    'Volatility 100 (1s) Index': '1HZ100V',
+    'Volatility 150 (1s) Index': '1HZ150V',
+    'Volatility 250 (1s) Index': '1HZ250V',
+};
+
 export const TradingAnalysisPage: React.FC = () => {
     const [market, setMarket] = useState('Volatility 10 Index');
     const [tickType, setTickType] = useState('Even/Odd');
     const [numberOfTicks, setNumberOfTicks] = useState(1000);
     const [barrier, setBarrier] = useState(5); // For Over/Under
     const [ticks, setTicks] = useState<TickData[]>([]);
-    const [currentPrice, setCurrentPrice] = useState(5402.31);
-    const [stat1Count, setStat1Count] = useState(60);
-    const [stat2Count, setStat2Count] = useState(40);
+    const [currentPrice, setCurrentPrice] = useState(0);
+    const [stat1Count, setStat1Count] = useState(0);
+    const [stat2Count, setStat2Count] = useState(0);
+    const [isConnected, setIsConnected] = useState(false);
+    const wsRef = useRef<WebSocket | null>(null);
+    const tickHistoryRef = useRef<TickData[]>([]);
 
     // Get labels based on tick type
     const getLabels = () => {
@@ -38,70 +57,146 @@ export const TradingAnalysisPage: React.FC = () => {
 
     const labels = getLabels();
 
-    // Generate sample tick data based on tick type
+    // Connect to Deriv WebSocket API
     useEffect(() => {
-        const generateTicks = () => {
-            const newTicks: TickData[] = [];
-            let price = 5400;
+        const connectWebSocket = () => {
+            const ws = new WebSocket('wss://ws.derivws.com/websockets/v3?app_id=1089');
+            wsRef.current = ws;
 
-            for (let i = 0; i < 20; i++) {
-                price += (Math.random() - 0.5) * 10;
-                const currentDigit = Math.floor(price * 100) % 10;
+            ws.onopen = () => {
+                console.log('Connected to Deriv WebSocket');
+                setIsConnected(true);
 
-                newTicks.push({
-                    value: currentDigit,
-                    timestamp: Date.now() - (20 - i) * 1000,
-                });
-            }
-            setTicks(newTicks);
-            setCurrentPrice(price);
+                // Subscribe to tick stream
+                const symbol = MARKET_SYMBOLS[market];
+                ws.send(
+                    JSON.stringify({
+                        ticks: symbol,
+                        subscribe: 1,
+                    })
+                );
 
-            // Calculate statistics based on tick type
-            let count1 = 0;
-            let count2 = 0;
+                // Request tick history
+                ws.send(
+                    JSON.stringify({
+                        ticks_history: symbol,
+                        count: Math.min(numberOfTicks, 5000),
+                        end: 'latest',
+                        style: 'ticks',
+                    })
+                );
+            };
 
-            switch (tickType) {
-                case 'Even/Odd':
-                    newTicks.forEach(tick => {
-                        if (tick.value % 2 === 0) count1++;
-                        else count2++;
+            ws.onmessage = event => {
+                const data = JSON.parse(event.data);
+
+                // Handle tick history response
+                if (data.msg_type === 'history') {
+                    const prices = data.history.prices;
+                    const times = data.history.times;
+
+                    const historyTicks: TickData[] = prices.map((price: number, index: number) => {
+                        const lastDigit = Math.floor(price * 100) % 10;
+                        return {
+                            value: lastDigit,
+                            timestamp: times[index] * 1000,
+                        };
                     });
-                    break;
-                case 'Rise/Fall':
-                    for (let i = 1; i < newTicks.length; i++) {
-                        if (newTicks[i].value > newTicks[i - 1].value) count1++;
-                        else count2++;
+
+                    tickHistoryRef.current = historyTicks;
+                    setTicks(historyTicks.slice(-20)); // Show last 20 ticks
+                    if (prices.length > 0) {
+                        setCurrentPrice(prices[prices.length - 1]);
                     }
-                    break;
-                case 'Over/Under':
-                    newTicks.forEach(tick => {
-                        if (tick.value > barrier)
-                            count1++; // Over barrier
-                        else if (tick.value < barrier) count2++; // Under barrier
-                    });
-                    break;
-                case 'Matches/Differs':
-                    const targetDigit = 5;
-                    newTicks.forEach(tick => {
-                        if (tick.value === targetDigit) count1++;
-                        else count2++;
-                    });
-                    break;
-            }
+                    calculateStatistics(historyTicks);
+                }
 
-            const total = count1 + count2;
-            if (total > 0) {
-                setStat1Count(Math.round((count1 / total) * 100));
-                setStat2Count(Math.round((count2 / total) * 100));
-            }
+                // Handle live tick updates
+                if (data.msg_type === 'tick') {
+                    const price = data.tick.quote;
+                    const lastDigit = Math.floor(price * 100) % 10;
+
+                    const newTick: TickData = {
+                        value: lastDigit,
+                        timestamp: data.tick.epoch * 1000,
+                    };
+
+                    tickHistoryRef.current = [...tickHistoryRef.current, newTick].slice(-Math.min(numberOfTicks, 5000));
+                    setTicks(tickHistoryRef.current.slice(-20));
+                    setCurrentPrice(price);
+                    calculateStatistics(tickHistoryRef.current);
+                }
+            };
+
+            ws.onerror = error => {
+                console.error('WebSocket error:', error);
+                setIsConnected(false);
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket disconnected');
+                setIsConnected(false);
+                // Reconnect after 3 seconds
+                setTimeout(connectWebSocket, 3000);
+            };
         };
 
-        generateTicks();
+        connectWebSocket();
 
-        // Auto-refresh every 2 seconds
-        const interval = setInterval(generateTicks, 2000);
-        return () => clearInterval(interval);
-    }, [tickType, numberOfTicks, barrier]);
+        return () => {
+            if (wsRef.current) {
+                wsRef.current.close();
+            }
+        };
+    }, [market, numberOfTicks]);
+
+    // Calculate statistics based on tick type
+    const calculateStatistics = (tickData: TickData[]) => {
+        let count1 = 0;
+        let count2 = 0;
+
+        switch (tickType) {
+            case 'Even/Odd':
+                tickData.forEach(tick => {
+                    if (tick.value % 2 === 0) count1++;
+                    else count2++;
+                });
+                break;
+            case 'Rise/Fall':
+                for (let i = 1; i < tickData.length; i++) {
+                    if (tickData[i].value > tickData[i - 1].value) count1++;
+                    else count2++;
+                }
+                break;
+            case 'Over/Under':
+                tickData.forEach(tick => {
+                    if (tick.value > barrier)
+                        count1++; // Over barrier
+                    else if (tick.value < barrier) count2++; // Under barrier
+                });
+                break;
+            case 'Matches/Differs':
+                const targetDigit = 5;
+                tickData.forEach(tick => {
+                    if (tick.value === targetDigit) count1++;
+                    else count2++;
+                });
+                break;
+        }
+
+        const total = count1 + count2;
+        if (total > 0) {
+            setStat1Count(Math.round((count1 / total) * 100));
+            setStat2Count(Math.round((count2 / total) * 100));
+        }
+    };
+
+    // Recalculate statistics when tick type or barrier changes
+    useEffect(() => {
+        if (tickHistoryRef.current.length > 0) {
+            calculateStatistics(tickHistoryRef.current);
+        }
+    }, [tickType, barrier]);
 
     const getTickDisplay = (tick: TickData, index: number) => {
         switch (tickType) {
@@ -211,8 +306,12 @@ export const TradingAnalysisPage: React.FC = () => {
 
                 {/* Current Price Display */}
                 <div className='price-display'>
+                    <div className='connection-status'>
+                        <span className={`status-indicator ${isConnected ? 'connected' : 'disconnected'}`}></span>
+                        <span className='status-text'>{isConnected ? 'Live Data' : 'Connecting...'}</span>
+                    </div>
                     <div className='price-label'>CURRENT PRICE</div>
-                    <div className='price-value'>{currentPrice.toFixed(2)}</div>
+                    <div className='price-value'>{currentPrice > 0 ? currentPrice.toFixed(2) : '---'}</div>
                     <div className='price-stats'>
                         <div className='stat'>
                             <span className='stat-label'>{labels.label1}</span>
