@@ -41,6 +41,9 @@ export const TradingAnalysisPage: React.FC = () => {
     const [isApiReady, setIsApiReady] = useState(false);
     const [isSubscribed, setIsSubscribed] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string>('');
+    const [activeTab, setActiveTab] = useState<'analysis' | 'paytable' | 'tradingview' | 'dftapps' | 'smartbadge'>(
+        'analysis'
+    );
     const subscriptionIdRef = useRef<string | null>(null);
     const tickHistoryRef = useRef<TickData[]>([]);
 
@@ -329,258 +332,314 @@ export const TradingAnalysisPage: React.FC = () => {
         <div className='trading-analysis-page'>
             {/* Header Tabs */}
             <div className='analysis-tabs'>
-                <button className='tab-btn active'>Analysis Tools</button>
-                <button className='tab-btn'>Pay Table</button>
-                <button className='tab-btn'>Trading View</button>
-                <button className='tab-btn'>DFT Apps</button>
-                <button className='tab-btn'>Smart Badge</button>
+                <button
+                    className={`tab-btn ${activeTab === 'analysis' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('analysis')}
+                >
+                    Analysis Tools
+                </button>
+                <button
+                    className={`tab-btn ${activeTab === 'paytable' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('paytable')}
+                >
+                    Pay Table
+                </button>
+                <button
+                    className={`tab-btn ${activeTab === 'tradingview' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('tradingview')}
+                >
+                    Trading View
+                </button>
+                <button
+                    className={`tab-btn ${activeTab === 'dftapps' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('dftapps')}
+                >
+                    DFT Apps
+                </button>
+                <button
+                    className={`tab-btn ${activeTab === 'smartbadge' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('smartbadge')}
+                >
+                    Smart Badge
+                </button>
             </div>
 
             {/* Main Content - Single Column Layout */}
             <div className='analysis-content-wrapper'>
-                {/* Configuration Section - Horizontal */}
-                <div className='config-section-horizontal'>
-                    <div className='config-field'>
-                        <label>Underlying Market</label>
-                        <select value={market} onChange={e => setMarket(e.target.value)}>
-                            <option>Volatility 10 Index</option>
-                            <option>Volatility 10 (1s) Index</option>
-                            <option>Volatility 25 Index</option>
-                            <option>Volatility 25 (1s) Index</option>
-                            <option>Volatility 50 Index</option>
-                            <option>Volatility 50 (1s) Index</option>
-                            <option>Volatility 75 Index</option>
-                            <option>Volatility 75 (1s) Index</option>
-                            <option>Volatility 100 Index</option>
-                            <option>Volatility 100 (1s) Index</option>
-                            <option>Volatility 150 (1s) Index</option>
-                            <option>Volatility 250 (1s) Index</option>
-                        </select>
-                    </div>
-                    <div className='config-field'>
-                        <label>Tick Type</label>
-                        <select value={tickType} onChange={e => setTickType(e.target.value)}>
-                            <option>Even/Odd</option>
-                            <option>Rise/Fall</option>
-                            <option>Over/Under</option>
-                            <option>Matches/Differs</option>
-                        </select>
-                    </div>
-                    {tickType === 'Over/Under' && (
-                        <div className='config-field'>
-                            <label>Barrier (Last Digit)</label>
-                            <select value={barrier} onChange={e => setBarrier(Number(e.target.value))}>
-                                <option value={0}>0</option>
-                                <option value={1}>1</option>
-                                <option value={2}>2</option>
-                                <option value={3}>3</option>
-                                <option value={4}>4</option>
-                                <option value={5}>5</option>
-                                <option value={6}>6</option>
-                                <option value={7}>7</option>
-                                <option value={8}>8</option>
-                                <option value={9}>9</option>
-                            </select>
-                        </div>
-                    )}
-                    <div className='config-field'>
-                        <label>Number of Ticks to Analyze</label>
-                        <input
-                            type='number'
-                            value={numberOfTicks}
-                            onChange={e => setNumberOfTicks(Number(e.target.value))}
-                            min='10'
-                            max='10000'
-                        />
-                    </div>
-                </div>
-
-                {/* Current Price Display */}
-                <div className='price-display'>
-                    <div className='connection-status'>
-                        <span
-                            className={`status-indicator ${isApiReady && isSubscribed ? 'connected' : 'disconnected'}`}
-                        ></span>
-                        <span className='status-text'>
-                            {!isApiReady
-                                ? 'Initializing API...'
-                                : isSubscribed
-                                  ? 'Live Data'
-                                  : errorMessage || 'Connecting...'}
-                        </span>
-                    </div>
-                    <div className='market-name'>{market}</div>
-                    <div className='price-label'>CURRENT PRICE</div>
-                    <div className='price-value'>{currentPrice > 0 ? currentPrice.toFixed(2) : '---'}</div>
-                    {!isLoggedIn && (
-                        <div className='login-notice'>
-                            💡 Tip: Log in to Deriv for full access to all markets and features
-                        </div>
-                    )}
-                    <div className='price-stats'>
-                        <div className='stat'>
-                            <span className='stat-label'>{labels.label1}</span>
-                            <span className='stat-value'>{stat1Count}</span>
-                        </div>
-                        <div className='stat'>
-                            <span className='stat-label'>{labels.label2}</span>
-                            <span className='stat-value'>{stat2Count}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Recent Ticks Pattern - HORIZONTAL */}
-                <div className='recent-ticks-section'>
-                    <h3>Recent {labels.pattern}</h3>
-                    <div className='ticks-display-horizontal'>
-                        {ticks.map((tick, index) => (
-                            <div
-                                key={index}
-                                className='tick-circle'
-                                style={{ backgroundColor: getTickColorByType(tick, index) }}
-                                title={`Tick ${index + 1}: ${tick.value}`}
-                            >
-                                {getTickDisplay(tick, index)}
+                {/* Analysis Tools Tab */}
+                {activeTab === 'analysis' && (
+                    <>
+                        {/* Configuration Section - Horizontal */}
+                        <div className='config-section-horizontal'>
+                            <div className='config-field'>
+                                <label>Underlying Market</label>
+                                <select value={market} onChange={e => setMarket(e.target.value)}>
+                                    <option>Volatility 10 Index</option>
+                                    <option>Volatility 10 (1s) Index</option>
+                                    <option>Volatility 25 Index</option>
+                                    <option>Volatility 25 (1s) Index</option>
+                                    <option>Volatility 50 Index</option>
+                                    <option>Volatility 50 (1s) Index</option>
+                                    <option>Volatility 75 Index</option>
+                                    <option>Volatility 75 (1s) Index</option>
+                                    <option>Volatility 100 Index</option>
+                                    <option>Volatility 100 (1s) Index</option>
+                                    <option>Volatility 150 (1s) Index</option>
+                                    <option>Volatility 250 (1s) Index</option>
+                                </select>
                             </div>
-                        ))}
-                    </div>
-                </div>
+                            <div className='config-field'>
+                                <label>Tick Type</label>
+                                <select value={tickType} onChange={e => setTickType(e.target.value)}>
+                                    <option>Even/Odd</option>
+                                    <option>Rise/Fall</option>
+                                    <option>Over/Under</option>
+                                    <option>Matches/Differs</option>
+                                </select>
+                            </div>
+                            {tickType === 'Over/Under' && (
+                                <div className='config-field'>
+                                    <label>Barrier (Last Digit)</label>
+                                    <select value={barrier} onChange={e => setBarrier(Number(e.target.value))}>
+                                        <option value={0}>0</option>
+                                        <option value={1}>1</option>
+                                        <option value={2}>2</option>
+                                        <option value={3}>3</option>
+                                        <option value={4}>4</option>
+                                        <option value={5}>5</option>
+                                        <option value={6}>6</option>
+                                        <option value={7}>7</option>
+                                        <option value={8}>8</option>
+                                        <option value={9}>9</option>
+                                    </select>
+                                </div>
+                            )}
+                            <div className='config-field'>
+                                <label>Number of Ticks to Analyze</label>
+                                <input
+                                    type='number'
+                                    value={numberOfTicks}
+                                    onChange={e => setNumberOfTicks(Number(e.target.value))}
+                                    min='10'
+                                    max='10000'
+                                />
+                            </div>
+                        </div>
 
-                {/* Deriv Chart Integration */}
-                <div className='chart-section'>
-                    <h3>Live Market Chart</h3>
-                    <div className='chart-container'>
-                        <iframe
-                            src={`https://charts.deriv.com/?symbol=${MARKET_SYMBOLS[market]}&interval=1t&theme=dark`}
-                            title={`${market} Chart`}
-                            className='deriv-chart-iframe'
-                            allow='fullscreen'
-                        />
-                    </div>
-                </div>
-
-                {/* Probability Analysis */}
-                <div className='probability-section'>
-                    <h3>Probability Analysis</h3>
-                    <div className='probability-bars'>
-                        <div className='prob-bar even'>
-                            <div className='bar-label'>{labels.label1}</div>
-                            <div className='bar-container'>
-                                <div className='bar-fill' style={{ width: `${stat1Count}%` }}>
-                                    {stat1Count}%
+                        {/* Current Price Display */}
+                        <div className='price-display'>
+                            <div className='connection-status'>
+                                <span
+                                    className={`status-indicator ${isApiReady && isSubscribed ? 'connected' : 'disconnected'}`}
+                                ></span>
+                                <span className='status-text'>
+                                    {!isApiReady
+                                        ? 'Initializing API...'
+                                        : isSubscribed
+                                          ? 'Live Data'
+                                          : errorMessage || 'Connecting...'}
+                                </span>
+                            </div>
+                            <div className='market-name'>{market}</div>
+                            <div className='price-label'>CURRENT PRICE</div>
+                            <div className='price-value'>{currentPrice > 0 ? currentPrice.toFixed(2) : '---'}</div>
+                            {!isLoggedIn && (
+                                <div className='login-notice'>
+                                    💡 Tip: Log in to Deriv for full access to all markets and features
+                                </div>
+                            )}
+                            <div className='price-stats'>
+                                <div className='stat'>
+                                    <span className='stat-label'>{labels.label1}</span>
+                                    <span className='stat-value'>{stat1Count}</span>
+                                </div>
+                                <div className='stat'>
+                                    <span className='stat-label'>{labels.label2}</span>
+                                    <span className='stat-value'>{stat2Count}</span>
                                 </div>
                             </div>
                         </div>
-                        <div className='prob-bar odd'>
-                            <div className='bar-label'>{labels.label2}</div>
-                            <div className='bar-container'>
-                                <div className='bar-fill' style={{ width: `${stat2Count}%` }}>
-                                    {stat2Count}%
+
+                        {/* Recent Ticks Pattern - HORIZONTAL */}
+                        <div className='recent-ticks-section'>
+                            <h3>Recent {labels.pattern}</h3>
+                            <div className='ticks-display-horizontal'>
+                                {ticks.map((tick, index) => (
+                                    <div
+                                        key={index}
+                                        className='tick-circle'
+                                        style={{ backgroundColor: getTickColorByType(tick, index) }}
+                                        title={`Tick ${index + 1}: ${tick.value}`}
+                                    >
+                                        {getTickDisplay(tick, index)}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Probability Analysis */}
+                        <div className='probability-section'>
+                            <h3>Probability Analysis</h3>
+                            <div className='probability-bars'>
+                                <div className='prob-bar even'>
+                                    <div className='bar-label'>{labels.label1}</div>
+                                    <div className='bar-container'>
+                                        <div className='bar-fill' style={{ width: `${stat1Count}%` }}>
+                                            {stat1Count}%
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='prob-bar odd'>
+                                    <div className='bar-label'>{labels.label2}</div>
+                                    <div className='bar-container'>
+                                        <div className='bar-fill' style={{ width: `${stat2Count}%` }}>
+                                            {stat2Count}%
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                {/* Bottom Section - Horizontal Layout */}
-                <div className='bottom-section'>
-                    {/* Trading Probability Guide */}
-                    <div className='probability-guide'>
-                        <h3>Trading Probability Guide</h3>
-                        <div className='guide-table'>
-                            <h4>Over Probabilities</h4>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Over 0</th>
-                                        <th>Over 1</th>
-                                        <th>Over 2</th>
-                                        <th>Over 3</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>90%</td>
-                                        <td>80%</td>
-                                        <td>70%</td>
-                                        <td>60%</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Over 4</td>
-                                        <td>Over 5</td>
-                                        <td>Over 6</td>
-                                        <td>Over 7</td>
-                                    </tr>
-                                    <tr>
-                                        <td>50%</td>
-                                        <td>40%</td>
-                                        <td>30%</td>
-                                        <td>20%</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className='guide-table'>
-                            <h4>Under Probabilities</h4>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Under 9</th>
-                                        <th>Under 8</th>
-                                        <th>Under 7</th>
-                                        <th>Under 6</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>90%</td>
-                                        <td>80%</td>
-                                        <td>70%</td>
-                                        <td>60%</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Under 5</td>
-                                        <td>Under 4</td>
-                                        <td>Under 3</td>
-                                        <td>Under 2</td>
-                                    </tr>
-                                    <tr>
-                                        <td>50%</td>
-                                        <td>40%</td>
-                                        <td>30%</td>
-                                        <td>20%</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                        {/* Bottom Section - Horizontal Layout */}
+                        <div className='bottom-section'>
+                            {/* Trading Probability Guide */}
+                            <div className='probability-guide'>
+                                <h3>Trading Probability Guide</h3>
+                                <div className='guide-table'>
+                                    <h4>Over Probabilities</h4>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Over 0</th>
+                                                <th>Over 1</th>
+                                                <th>Over 2</th>
+                                                <th>Over 3</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>90%</td>
+                                                <td>80%</td>
+                                                <td>70%</td>
+                                                <td>60%</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Over 4</td>
+                                                <td>Over 5</td>
+                                                <td>Over 6</td>
+                                                <td>Over 7</td>
+                                            </tr>
+                                            <tr>
+                                                <td>50%</td>
+                                                <td>40%</td>
+                                                <td>30%</td>
+                                                <td>20%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className='guide-table'>
+                                    <h4>Under Probabilities</h4>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Under 9</th>
+                                                <th>Under 8</th>
+                                                <th>Under 7</th>
+                                                <th>Under 6</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>90%</td>
+                                                <td>80%</td>
+                                                <td>70%</td>
+                                                <td>60%</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Under 5</td>
+                                                <td>Under 4</td>
+                                                <td>Under 3</td>
+                                                <td>Under 2</td>
+                                            </tr>
+                                            <tr>
+                                                <td>50%</td>
+                                                <td>40%</td>
+                                                <td>30%</td>
+                                                <td>20%</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
 
-                    {/* Win/Loss Stats */}
-                    <div className='win-loss-section'>
-                        <h3>Win/Loss Streak Stats</h3>
-                        <table className='stats-table'>
-                            <thead>
-                                <tr>
-                                    <th>Statistic</th>
-                                    <th>{tickType}</th>
-                                    <th>Overall</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Winning Streak</td>
-                                    <td className='positive'>Above {stat1Count > 70 ? '85' : '80'}%</td>
-                                    <td className='positive'>Above 85%</td>
-                                </tr>
-                                <tr>
-                                    <td>Maximum Streak</td>
-                                    <td>Up to {Math.floor(stat1Count / 5)}</td>
-                                    <td>Up to 12</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                            {/* Win/Loss Stats */}
+                            <div className='win-loss-section'>
+                                <h3>Win/Loss Streak Stats</h3>
+                                <table className='stats-table'>
+                                    <thead>
+                                        <tr>
+                                            <th>Statistic</th>
+                                            <th>{tickType}</th>
+                                            <th>Overall</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Winning Streak</td>
+                                            <td className='positive'>Above {stat1Count > 70 ? '85' : '80'}%</td>
+                                            <td className='positive'>Above 85%</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Maximum Streak</td>
+                                            <td>Up to {Math.floor(stat1Count / 5)}</td>
+                                            <td>Up to 12</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </>
+                )}
+
+                {/* Trading View Tab */}
+                {activeTab === 'tradingview' && (
+                    <div className='chart-section'>
+                        <h3>Live Market Chart - {market}</h3>
+                        <div className='chart-container'>
+                            <iframe
+                                src={`https://charts.deriv.com/?symbol=${MARKET_SYMBOLS[market]}&interval=1t&theme=dark`}
+                                title={`${market} Chart`}
+                                className='deriv-chart-iframe'
+                                allow='fullscreen'
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
+
+                {/* Pay Table Tab */}
+                {activeTab === 'paytable' && (
+                    <div className='placeholder-section'>
+                        <h3>Pay Table</h3>
+                        <p>Pay table information will be displayed here.</p>
+                    </div>
+                )}
+
+                {/* DFT Apps Tab */}
+                {activeTab === 'dftapps' && (
+                    <div className='placeholder-section'>
+                        <h3>DFT Apps</h3>
+                        <p>DFT Apps will be displayed here.</p>
+                    </div>
+                )}
+
+                {/* Smart Badge Tab */}
+                {activeTab === 'smartbadge' && (
+                    <div className='placeholder-section'>
+                        <h3>Smart Badge</h3>
+                        <p>Smart Badge information will be displayed here.</p>
+                    </div>
+                )}
             </div>
         </div>
     );
