@@ -296,6 +296,11 @@ const AppWrapper = observer(() => {
     useEffect(() => {
         const fetchBots = async () => {
             const botFiles = [
+                // New Bram Bots - Featured
+                'BRAM SPEED BOT V6.xml',
+                'AUTO OVER AI by CEOBRAM.xml',
+                'AUTO OVER AI by CEOBRAM (1).xml',
+
                 // Core Trading Bots
                 'Bram Entrypoint V1.xml',
                 'MatchesMaster.xml',
