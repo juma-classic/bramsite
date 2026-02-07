@@ -299,10 +299,11 @@ const AppWrapper = observer(() => {
                 // New Bram Bots - Featured
                 'BRAM SPEED BOT V6.xml',
                 'AUTO OVER AI by CEOBRAM.xml',
+                'AUTO Even Odd AI By Bram.xml',
                 'AUTO OVER AI by CEOBRAM (1).xml',
 
                 // Core Trading Bots
-                'Bram Entrypoint V1.xml',
+                'PATEL (with Entry).xml',
                 'MatchesMaster.xml',
                 'Bram Auto V1.xml',
                 'Bram Auto V2.xml',
@@ -1457,10 +1458,10 @@ const AppWrapper = observer(() => {
                 targetDigit,
             });
 
-            // Find the MATCHES bot XML file (we'll use Bram Entrypoint V1 as template and modify it)
-            const templateBot = bots.find(b => b.filePath === 'Bram Entrypoint V1.xml');
+            // Find the MATCHES bot XML file (we'll use PATEL as template and modify it)
+            const templateBot = bots.find(b => b.filePath === 'PATEL (with Entry).xml');
             if (templateBot) {
-                console.log('✅ Found Bram Entrypoint V1 template, configuring for MATCHES mode...');
+                console.log('✅ Found PATEL template, configuring for MATCHES mode...');
 
                 // Parse and configure the XML for MATCHES mode
                 const parser = new DOMParser();
