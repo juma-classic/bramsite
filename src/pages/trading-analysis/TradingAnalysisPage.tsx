@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useTickPointer } from '@/hooks/useTickPointer';
+import React, { useState, useEffect, useRef } from 'react';
+import { derivAPIService } from '@/services/deriv-api.service';
+import { api_base } from '@/external/bot-skeleton';
 import './TradingAnalysisPage.scss';
 
 interface TickData {
@@ -30,15 +31,128 @@ export const TradingAnalysisPage: React.FC = () => {
     const [numberOfTicks, setNumberOfTicks] = useState(1000);
     const [barrier, setBarrier] = useState(5); // For Over/Under
     const [ticks, setTicks] = useState<TickData[]>([]);
+    const [currentPrice, setCurrentPrice] = useState(0);
     const [stat1Count, setStat1Count] = useState(0);
     const [stat2Count, setStat2Count] = useState(0);
+    const [isApiReady, setIsApiReady] = useState(false);
+    const [isSubscribed, setIsSubscribed] = useState(false);
+    const subscriptionIdRef = useRef<string | null>(null);
+    const tickHistoryRef = useRef<TickData[]>([]);
 
-    // Use the same hook as Metatron Analysis Tool
-    const symbol = MARKET_SYMBOLS[market];
-    const { currentTick, tickHistory, isSubscribed } = useTickPointer(symbol, true);
+    // Check if API is ready
+    useEffect(() => {
+        const checkApiReady = () => {
+            if (api_base.api) {
+                console.log('✅ Deriv API is ready');
+                setIsApiReady(true);
+            } else {
+                console.log('⏳ Waiting for Deriv API...');
+                setTimeout(checkApiReady, 500);
+            }
+        };
+        checkApiReady();
+    }, []);
 
-    // Get current price from the latest tick
-    const currentPrice = currentTick?.quote || 0;
+    // Extract last digit from price
+    const extractLastDigit = (price: number): number => {
+        const priceStr = price.toString();
+        const lastChar = priceStr.charAt(priceStr.length - 1);
+        return parseInt(lastChar, 10);
+    };
+
+    // Subscribe to market data when API is ready
+    useEffect(() => {
+        if (!isApiReady) return;
+
+        const symbol = MARKET_SYMBOLS[market];
+        console.log('📊 Subscribing to:', symbol, 'for market:', market);
+
+        const subscribe = async () => {
+            try {
+                // Unsubscribe from previous if exists
+                if (subscriptionIdRef.current) {
+                    await derivAPIService.unsubscribe(subscriptionIdRef.current);
+                    subscriptionIdRef.current = null;
+                }
+
+                // Reset state
+                tickHistoryRef.current = [];
+                setTicks([]);
+                setCurrentPrice(0);
+                setIsSubscribed(false);
+
+                // Get tick history
+                const historyResponse = await derivAPIService.getTicksHistory({
+                    symbol,
+                    count: Math.min(numberOfTicks, 1000),
+                    end: 'latest',
+                    style: 'ticks',
+                });
+
+                console.log('📜 Received tick history:', historyResponse);
+
+                if (historyResponse?.history) {
+                    const prices = historyResponse.history.prices;
+                    const times = historyResponse.history.times;
+
+                    const historyTicks: TickData[] = prices.map((price: number, index: number) => ({
+                        value: extractLastDigit(price),
+                        timestamp: times[index] * 1000,
+                        price,
+                    }));
+
+                    tickHistoryRef.current = historyTicks;
+                    setTicks(historyTicks.slice(-20));
+                    if (prices.length > 0) {
+                        setCurrentPrice(prices[prices.length - 1]);
+                        console.log('💰 Initial price:', prices[prices.length - 1]);
+                    }
+                    calculateStatistics(historyTicks);
+                }
+
+                // Subscribe to live ticks
+                const subscriptionId = await derivAPIService.subscribeToTicks(symbol, response => {
+                    if (response.tick && response.tick.symbol === symbol) {
+                        const price = response.tick.quote;
+                        const lastDigit = extractLastDigit(price);
+
+                        console.log('🔄 New tick:', price, 'digit:', lastDigit);
+
+                        const newTick: TickData = {
+                            value: lastDigit,
+                            timestamp: response.tick.epoch * 1000,
+                            price,
+                        };
+
+                        tickHistoryRef.current = [...tickHistoryRef.current, newTick].slice(-numberOfTicks);
+                        setTicks(tickHistoryRef.current.slice(-20));
+                        setCurrentPrice(price);
+                        calculateStatistics(tickHistoryRef.current);
+                    }
+                });
+
+                if (subscriptionId) {
+                    subscriptionIdRef.current = subscriptionId;
+                    setIsSubscribed(true);
+                    console.log('✅ Successfully subscribed with ID:', subscriptionId);
+                }
+            } catch (error) {
+                console.error('❌ Failed to subscribe:', error);
+                setIsSubscribed(false);
+            }
+        };
+
+        subscribe();
+
+        return () => {
+            if (subscriptionIdRef.current) {
+                console.log('🔌 Unsubscribing from:', symbol);
+                derivAPIService.unsubscribe(subscriptionIdRef.current).catch(console.error);
+                subscriptionIdRef.current = null;
+            }
+            setIsSubscribed(false);
+        };
+    }, [isApiReady, market, numberOfTicks]);
 
     // Get labels based on tick type
     const getLabels = () => {
@@ -64,18 +178,10 @@ export const TradingAnalysisPage: React.FC = () => {
 
     // Update ticks display when tickHistory changes
     useEffect(() => {
-        if (tickHistory.length > 0) {
-            // Convert tickHistory to our TickData format
-            const formattedTicks: TickData[] = tickHistory.slice(0, 20).map(tick => ({
-                value: tick.lastDigit,
-                timestamp: tick.timestamp,
-                price: tick.quote,
-            }));
-
-            setTicks(formattedTicks);
-            calculateStatistics(tickHistory.slice(0, Math.min(numberOfTicks, tickHistory.length)));
+        if (tickHistoryRef.current.length > 0) {
+            calculateStatistics(tickHistoryRef.current);
         }
-    }, [tickHistory.length, tickType, barrier, numberOfTicks]);
+    }, [tickType, barrier]);
 
     // Calculate statistics based on tick type
     const calculateStatistics = (tickData: any[]) => {
@@ -233,8 +339,12 @@ export const TradingAnalysisPage: React.FC = () => {
                 {/* Current Price Display */}
                 <div className='price-display'>
                     <div className='connection-status'>
-                        <span className={`status-indicator ${isSubscribed ? 'connected' : 'disconnected'}`}></span>
-                        <span className='status-text'>{isSubscribed ? 'Live Data' : 'Connecting...'}</span>
+                        <span
+                            className={`status-indicator ${isApiReady && isSubscribed ? 'connected' : 'disconnected'}`}
+                        ></span>
+                        <span className='status-text'>
+                            {!isApiReady ? 'Initializing API...' : isSubscribed ? 'Live Data' : 'Connecting...'}
+                        </span>
                     </div>
                     <div className='market-name'>{market}</div>
                     <div className='price-label'>CURRENT PRICE</div>
