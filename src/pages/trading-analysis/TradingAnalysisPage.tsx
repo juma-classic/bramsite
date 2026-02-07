@@ -26,7 +26,7 @@ export const TradingAnalysisPage: React.FC = () => {
             case 'Over/Under':
                 return {
                     label1: `Over ${barrier}`,
-                    label2: `Under ${barrier + 1}`,
+                    label2: `Under ${barrier}`,
                     pattern: `Over/Under ${barrier} Pattern`,
                 };
             case 'Matches/Differs':
@@ -77,7 +77,7 @@ export const TradingAnalysisPage: React.FC = () => {
                     newTicks.forEach(tick => {
                         if (tick.value > barrier)
                             count1++; // Over barrier
-                        else count2++; // Under barrier+1
+                        else if (tick.value < barrier) count2++; // Under barrier
                     });
                     break;
                 case 'Matches/Differs':
@@ -111,7 +111,9 @@ export const TradingAnalysisPage: React.FC = () => {
                 if (index === 0) return '-';
                 return tick.value > ticks[index - 1].value ? '↑' : '↓';
             case 'Over/Under':
-                return tick.value > barrier ? 'O' : 'U';
+                if (tick.value > barrier) return 'O';
+                if (tick.value < barrier) return 'U';
+                return '='; // Equal to barrier
             case 'Matches/Differs':
                 return tick.value === 5 ? 'M' : 'D';
             default:
@@ -127,7 +129,9 @@ export const TradingAnalysisPage: React.FC = () => {
                 if (index === 0) return '#94a3b8';
                 return tick.value > ticks[index - 1].value ? '#10b981' : '#ef4444';
             case 'Over/Under':
-                return tick.value > barrier ? '#10b981' : '#ef4444';
+                if (tick.value > barrier) return '#10b981'; // Over - green
+                if (tick.value < barrier) return '#ef4444'; // Under - red
+                return '#94a3b8'; // Equal to barrier - gray
             case 'Matches/Differs':
                 return tick.value === 5 ? '#10b981' : '#ef4444';
             default:
