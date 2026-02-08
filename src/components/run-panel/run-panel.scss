@@ -56,7 +56,7 @@
         background-color: var(--general-section-2);
         flex-shrink: 0; /* Prevent statistics from shrinking */
         max-height: 100px; /* Reduced from 120px to 100px for more content space */
-        margin-bottom: 430px !important; /* Increased to 430px to fully expose statistics above Reset button */
+        margin-bottom: 180px !important; /* Reduced from 430px to 180px to give more space for transactions */
 
         @include mobile-or-tablet-screen {
             margin: 0;
@@ -107,7 +107,7 @@
     &__footer {
         text-align: center;
         position: fixed !important; /* Fixed to viewport instead of absolute */
-        bottom: 13rem !important; /* Position just above the statistics section (Total stake, Total payout) */
+        bottom: 11rem !important; /* Adjusted to match new padding - just above statistics */
         left: 2rem !important; /* Align with panel position */
         width: 36.6rem !important; /* Match panel width */
         height: auto !important; /* Auto height to fit button */
@@ -204,7 +204,7 @@
         flex-direction: column;
         overflow: hidden !important;
         height: calc(100% - 40px); /* Increased available height by reducing reserved space from 60px to 40px */
-        padding-bottom: 430px !important; /* Increased to 430px to fully expose content above Reset button */
+        padding-bottom: 180px !important; /* Reduced from 430px to 180px to give more space for transactions */
 
         .dc-tabs {
             &__item {
@@ -227,7 +227,7 @@
         &__content {
             height: calc(100vh - 35rem); /* Increased available height by reducing from 42rem to 35rem */
             overflow: auto; /* Allow scrolling if needed */
-            padding-bottom: 430px !important; /* Increased to 430px to fully expose content above Reset button */
+            padding-bottom: 180px !important; /* Reduced from 430px to 180px to give more space for transactions */
 
             &--no-stat {
                 height: var(--drawer-content-height-no-stat);
