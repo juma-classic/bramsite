@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { derivAPIService } from '@/services/deriv-api.service';
 import { api_base } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
+import { unifiedTickData } from '@/services/unified-tick-data.service';
+import { derivAPIInitializer } from '@/services/deriv-api-initializer.service';
 import {
     LabelPairedCircleCheckMdFillIcon,
     LabelPairedCircleExclamationMdFillIcon,
@@ -86,7 +87,7 @@ export const TradingAnalysisPage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'analysis' | 'paytable' | 'tradingview' | 'dftapps' | 'smartbadge'>(
         'analysis'
     );
-    const subscriptionIdRef = useRef<string | null>(null);
+    const unsubscribeRef = useRef<(() => void) | null>(null);
     const tickHistoryRef = useRef<TickData[]>([]);
 
     // New state for enhanced features
@@ -101,19 +102,29 @@ export const TradingAnalysisPage: React.FC = () => {
     const [winRate, setWinRate] = useState(0);
     const [totalTrades, setTotalTrades] = useState(0);
 
-    // Check if API is ready
+    // Check if API is ready with better error handling
     useEffect(() => {
+        let checkCount = 0;
+        const maxChecks = 20; // Try for 10 seconds
+
         const checkApiReady = () => {
-            if (api_base.api) {
+            checkCount++;
+
+            if (api_base.api && typeof api_base.api.send === 'function') {
                 console.log('✅ Deriv API is ready');
-                console.log('👤 Login status:', isLoggedIn ? 'Logged in' : 'Not logged in (using demo data)');
+                console.log('👤 Login status:', isLoggedIn ? 'Logged in' : 'Not logged in');
                 setIsApiReady(true);
                 setErrorMessage('');
-            } else {
-                console.log('⏳ Waiting for Deriv API...');
+            } else if (checkCount < maxChecks) {
+                console.log(`⏳ Waiting for Deriv API... (${checkCount}/${maxChecks})`);
                 setTimeout(checkApiReady, 500);
+            } else {
+                console.error('❌ Deriv API failed to initialize after', maxChecks, 'attempts');
+                setErrorMessage('Failed to connect to Deriv API. Please refresh the page.');
+                setIsApiReady(false);
             }
         };
+
         checkApiReady();
     }, [isLoggedIn]);
 
@@ -124,7 +135,7 @@ export const TradingAnalysisPage: React.FC = () => {
         return parseInt(lastChar, 10);
     };
 
-    // Subscribe to market data when API is ready
+    // Subscribe to market data using unified tick data service
     useEffect(() => {
         if (!isApiReady) {
             console.log('⏸️ API not ready yet, waiting...');
@@ -132,20 +143,15 @@ export const TradingAnalysisPage: React.FC = () => {
         }
 
         const symbol = MARKET_SYMBOLS[market];
-        console.log('📊 Starting subscription process for:', symbol, 'market:', market);
-        console.log('🔍 API base status:', {
-            hasApi: !!api_base.api,
-            canSend: typeof api_base.api?.send === 'function',
-            canSubscribe: typeof api_base.api?.onMessage === 'function',
-        });
+        console.log('📊 Initializing unified tick stream for:', symbol, '(', market, ')');
 
-        const subscribe = async () => {
+        const initializeStream = async () => {
             try {
-                // Unsubscribe from previous if exists
-                if (subscriptionIdRef.current) {
-                    console.log('🔌 Unsubscribing from previous subscription:', subscriptionIdRef.current);
-                    await derivAPIService.unsubscribe(subscriptionIdRef.current);
-                    subscriptionIdRef.current = null;
+                // Clean up previous subscription
+                if (unsubscribeRef.current) {
+                    console.log('🔌 Cleaning up previous subscription');
+                    unsubscribeRef.current();
+                    unsubscribeRef.current = null;
                 }
 
                 // Reset state
@@ -153,118 +159,77 @@ export const TradingAnalysisPage: React.FC = () => {
                 setTicks([]);
                 setCurrentPrice(0);
                 setIsSubscribed(false);
+                setErrorMessage('');
 
-                console.log('📞 Calling getTicksHistory for:', symbol);
+                console.log('⏳ Ensuring Deriv API is ready...');
+                await derivAPIInitializer.waitForReady(20000);
+                console.log('✅ Deriv API confirmed ready');
 
-                // Get tick history
-                const historyResponse = await derivAPIService.getTicksHistory({
+                // Initialize unified tick stream with historical data
+                const unsubscribe = await unifiedTickData.initializeTickStream(
                     symbol,
-                    count: Math.min(numberOfTicks, 1000),
-                    end: 'latest',
-                    style: 'ticks',
-                });
-
-                console.log('📜 Received tick history response:', {
-                    hasResponse: !!historyResponse,
-                    hasHistory: !!historyResponse?.history,
-                    priceCount: historyResponse?.history?.prices?.length || 0,
-                    firstPrice: historyResponse?.history?.prices?.[0],
-                    lastPrice: historyResponse?.history?.prices?.[historyResponse?.history?.prices?.length - 1],
-                });
-
-                if (historyResponse?.history) {
-                    const prices = historyResponse.history.prices;
-                    const times = historyResponse.history.times;
-
-                    console.log('✅ Processing', prices.length, 'historical ticks');
-
-                    const historyTicks: TickData[] = prices.map((price: number, index: number) => ({
-                        value: extractLastDigit(price),
-                        timestamp: times[index] * 1000,
-                        price,
-                    }));
-
-                    tickHistoryRef.current = historyTicks;
-                    setTicks(historyTicks.slice(-20));
-                    if (prices.length > 0) {
-                        const latestPrice = prices[prices.length - 1];
-                        setCurrentPrice(latestPrice);
-                        console.log('💰 Set current price to:', latestPrice);
-                    }
-                    calculateStatistics(historyTicks);
-                    setErrorMessage('');
-                } else {
-                    console.warn('⚠️ No history data in response:', historyResponse);
-                    setErrorMessage('No historical data available for ' + market);
-                }
-
-                console.log('📡 Now subscribing to live ticks for:', symbol);
-
-                // Subscribe to live ticks
-                const subscriptionId = await derivAPIService.subscribeToTicks(symbol, response => {
-                    console.log('🔔 Received tick update:', {
-                        hasTick: !!response.tick,
-                        symbol: response.tick?.symbol,
-                        quote: response.tick?.quote,
-                    });
-
-                    if (response.tick && response.tick.symbol === symbol) {
-                        const price = response.tick.quote;
+                    Math.min(numberOfTicks, 1000), // Load historical ticks
+                    tickData => {
+                        // Handle live tick updates
+                        const price = tickData.quote;
                         const lastDigit = extractLastDigit(price);
-
-                        console.log('🔄 Processing new tick - Price:', price, 'Digit:', lastDigit);
 
                         const newTick: TickData = {
                             value: lastDigit,
-                            timestamp: response.tick.epoch * 1000,
+                            timestamp: tickData.epoch * 1000,
                             price,
                         };
 
+                        // Update tick history
                         tickHistoryRef.current = [...tickHistoryRef.current, newTick].slice(-numberOfTicks);
                         setTicks(tickHistoryRef.current.slice(-20));
                         setCurrentPrice(price);
-                        console.log('💰 Updated current price to:', price);
                         calculateStatistics(tickHistoryRef.current);
                     }
-                });
+                );
 
-                console.log('🔗 Subscription result:', {
-                    hasSubscriptionId: !!subscriptionId,
-                    subscriptionId,
-                });
+                // Store unsubscribe function
+                unsubscribeRef.current = unsubscribe;
+                setIsSubscribed(true);
+                setErrorMessage('');
+                console.log('✅ Successfully subscribed to unified tick stream');
 
-                if (subscriptionId) {
-                    subscriptionIdRef.current = subscriptionId;
-                    setIsSubscribed(true);
-                    console.log('✅ Successfully subscribed with ID:', subscriptionId);
-                } else {
-                    console.error('❌ No subscription ID returned');
-                    setErrorMessage('Failed to subscribe to live data');
+                // Load historical data into state
+                const historicalTicks = unifiedTickData.getHistoricalTicks(symbol);
+                if (historicalTicks && historicalTicks.length > 0) {
+                    const formattedTicks: TickData[] = historicalTicks.map(tick => ({
+                        value: extractLastDigit(tick.quote),
+                        timestamp: tick.epoch * 1000,
+                        price: tick.quote,
+                    }));
+
+                    tickHistoryRef.current = formattedTicks;
+                    setTicks(formattedTicks.slice(-20));
+
+                    const latestPrice = historicalTicks[historicalTicks.length - 1].quote;
+                    setCurrentPrice(latestPrice);
+                    console.log('💰 Loaded', historicalTicks.length, 'historical ticks. Current price:', latestPrice);
+
+                    calculateStatistics(formattedTicks);
                 }
             } catch (error) {
-                console.error('❌ Failed to subscribe:', error);
-                console.error('❌ Error details:', {
-                    message: error instanceof Error ? error.message : String(error),
-                    stack: error instanceof Error ? error.stack : undefined,
-                });
+                console.error('❌ Failed to initialize tick stream:', error);
                 setIsSubscribed(false);
                 setErrorMessage(
                     isLoggedIn
-                        ? 'Failed to connect to Deriv API. Please check your connection.'
+                        ? 'Failed to connect to market data. Please try refreshing the page.'
                         : 'Please log in to Deriv to access live market data.'
                 );
             }
         };
 
-        subscribe();
+        initializeStream();
 
         return () => {
-            if (subscriptionIdRef.current) {
-                console.log('🔌 Unsubscribing from:', symbol, 'ID:', subscriptionIdRef.current);
-                derivAPIService.unsubscribe(subscriptionIdRef.current).catch(err => {
-                    console.error('Error unsubscribing:', err);
-                });
-                subscriptionIdRef.current = null;
+            if (unsubscribeRef.current) {
+                console.log('🔌 Cleaning up subscription on unmount');
+                unsubscribeRef.current();
+                unsubscribeRef.current = null;
             }
             setIsSubscribed(false);
         };
@@ -1139,7 +1104,7 @@ export const TradingAnalysisPage: React.FC = () => {
                             </div>
                             <div className='app-card'>
                                 <div className='app-icon'>
-                                    <LabelPairedLocationCrosshairsMdRegularIcon />
+                                    <LabelPairedTargetMdRegularIcon />
                                 </div>
                                 <h4>Pattern Scanner</h4>
                                 <p>Scan for repeating patterns and streaks in real-time market data</p>
@@ -1152,7 +1117,7 @@ export const TradingAnalysisPage: React.FC = () => {
                             </div>
                             <div className='app-card'>
                                 <div className='app-icon'>
-                                    <LabelPairedChartLineMdRegularIcon />
+                                    <LabelPairedChartLineUpMdRegularIcon />
                                 </div>
                                 <h4>Trend Predictor</h4>
                                 <p>AI-powered trend prediction based on historical data analysis</p>
@@ -1178,7 +1143,7 @@ export const TradingAnalysisPage: React.FC = () => {
                             </div>
                             <div className='app-card'>
                                 <div className='app-icon'>
-                                    <LabelPairedGearMdRegularIcon />
+                                    <LabelPairedCalculatorMdRegularIcon />
                                 </div>
                                 <h4>Risk Calculator</h4>
                                 <p>Calculate optimal stake sizes and risk management strategies</p>
@@ -1191,7 +1156,7 @@ export const TradingAnalysisPage: React.FC = () => {
                             </div>
                             <div className='app-card'>
                                 <div className='app-icon'>
-                                    <LabelPairedGearMdRegularIcon />
+                                    <LabelPairedRobotMdRegularIcon />
                                 </div>
                                 <h4>Bot Builder</h4>
                                 <p>Create automated trading bots based on your analysis strategies</p>
@@ -1210,7 +1175,7 @@ export const TradingAnalysisPage: React.FC = () => {
                         <div className='badge-container'>
                             <div className='badge-display'>
                                 <div className='badge-icon'>
-                                    <LabelPairedCircleStarMdFillIcon />
+                                    <LabelPairedTrophyMdFillIcon />
                                 </div>
                                 <div className='badge-level'>Level {Math.floor(totalTrades / 10) + 1}</div>
                                 <div className='badge-title'>
@@ -1250,7 +1215,7 @@ export const TradingAnalysisPage: React.FC = () => {
                                     </div>
                                     <div className='stat-item'>
                                         <div className='stat-icon'>
-                                            <LabelPairedLocationCrosshairsMdRegularIcon />
+                                            <LabelPairedTargetMdRegularIcon />
                                         </div>
                                         <div className='stat-details'>
                                             <div className='stat-label'>Win Rate</div>
@@ -1273,7 +1238,7 @@ export const TradingAnalysisPage: React.FC = () => {
                                     </div>
                                     <div className='stat-item'>
                                         <div className='stat-icon'>
-                                            <LabelPairedStarMdFillIcon />
+                                            <LabelPairedFireMdFillIcon />
                                         </div>
                                         <div className='stat-details'>
                                             <div className='stat-label'>Best Streak</div>
@@ -1304,25 +1269,25 @@ export const TradingAnalysisPage: React.FC = () => {
                                 <div className='achievements-grid'>
                                     <div className={`achievement ${totalTrades >= 1 ? 'unlocked' : 'locked'}`}>
                                         <div className='achievement-icon'>
-                                            <LabelPairedLocationCrosshairsMdRegularIcon />
+                                            <LabelPairedTargetMdRegularIcon />
                                         </div>
                                         <div className='achievement-name'>First Trade</div>
                                     </div>
                                     <div className={`achievement ${totalTrades >= 10 ? 'unlocked' : 'locked'}`}>
                                         <div className='achievement-icon'>
-                                            <LabelPairedChartLineMdRegularIcon />
+                                            <LabelPairedChartLineUpMdRegularIcon />
                                         </div>
                                         <div className='achievement-name'>10 Trades</div>
                                     </div>
                                     <div className={`achievement ${winRate >= 60 ? 'unlocked' : 'locked'}`}>
                                         <div className='achievement-icon'>
-                                            <LabelPairedCircleStarMdFillIcon />
+                                            <LabelPairedTrophyMdFillIcon />
                                         </div>
                                         <div className='achievement-name'>60% Win Rate</div>
                                     </div>
                                     <div className={`achievement ${totalProfit >= 100 ? 'unlocked' : 'locked'}`}>
                                         <div className='achievement-icon'>
-                                            <LabelPairedHandsHoldingDiamondMdFillIcon />
+                                            <LabelPairedGemMdFillIcon />
                                         </div>
                                         <div className='achievement-name'>100+ Profit</div>
                                     </div>
