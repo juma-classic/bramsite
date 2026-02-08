@@ -8,7 +8,79 @@ import { CopyTradingStats as StatsComponent } from './CopyTradingStats';
 import './CopyTradingDashboard.scss';
 
 // Professional SVG Icons
-const DashboardIcon = () => '📋';
+const DashboardIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <rect x='3' y='3' width='7' height='7' rx='1' stroke='currentColor' strokeWidth='2' fill='none' />
+        <rect x='14' y='3' width='7' height='7' rx='1' stroke='currentColor' strokeWidth='2' fill='none' />
+        <rect x='3' y='14' width='7' height='7' rx='1' stroke='currentColor' strokeWidth='2' fill='none' />
+        <rect x='14' y='14' width='7' height='7' rx='1' stroke='currentColor' strokeWidth='2' fill='none' />
+    </svg>
+);
+
+const LoadingIcon = () => (
+    <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg' className='spin'>
+        <circle
+            cx='12'
+            cy='12'
+            r='10'
+            stroke='currentColor'
+            strokeWidth='4'
+            strokeDasharray='60'
+            strokeDashoffset='15'
+            opacity='0.25'
+        />
+        <path d='M12 2a10 10 0 0 1 10 10' stroke='currentColor' strokeWidth='4' strokeLinecap='round' />
+    </svg>
+);
+
+const NewTraderIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <circle cx='12' cy='8' r='4' stroke='currentColor' strokeWidth='2' fill='none' />
+        <path d='M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2' stroke='currentColor' strokeWidth='2' />
+        <circle cx='17' cy='7' r='3' fill='#28a745' />
+        <path d='M17 6v2M16 7h2' stroke='white' strokeWidth='1.5' strokeLinecap='round' />
+    </svg>
+);
+
+const TradeExecutedIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <path d='M12 2L2 7l10 5 10-5-10-5z' stroke='currentColor' strokeWidth='2' strokeLinejoin='round' fill='none' />
+        <path
+            d='M2 17l10 5 10-5M2 12l10 5 10-5'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+        />
+    </svg>
+);
+
+const TradeResultIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <path d='M3 3v18h18' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+        <path
+            d='M7 14l3-3 3 3 5-7'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+        />
+    </svg>
+);
+
+const ErrorIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <circle cx='12' cy='12' r='10' stroke='#dc3545' strokeWidth='2' fill='none' />
+        <path d='M15 9l-6 6M9 9l6 6' stroke='#dc3545' strokeWidth='2' strokeLinecap='round' />
+    </svg>
+);
+
+const WarningIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <path d='M12 2L2 20h20L12 2z' stroke='#ffc107' strokeWidth='2' strokeLinejoin='round' fill='none' />
+        <path d='M12 9v4M12 17h.01' stroke='#ffc107' strokeWidth='2' strokeLinecap='round' />
+    </svg>
+);
 
 const UsersIcon = () => (
     <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
@@ -167,7 +239,7 @@ export const CopyTradingDashboard: React.FC = () => {
         return (
             <div className='copy-trading-dashboard loading'>
                 <div className='loading-spinner'>
-                    <span>🔄</span>
+                    <LoadingIcon />
                     <p>Initializing Copy Trading...</p>
                 </div>
             </div>
@@ -313,11 +385,11 @@ export const CopyTradingDashboard: React.FC = () => {
                                         className={`notification-item ${notification.severity.toLowerCase()} ${notification.isRead ? 'read' : 'unread'}`}
                                     >
                                         <div className='notification-icon'>
-                                            {notification.type === 'NEW_TRADER' && '👤'}
-                                            {notification.type === 'TRADE_EXECUTED' && '🚀'}
-                                            {notification.type === 'TRADE_RESULT' && '📊'}
-                                            {notification.type === 'ERROR' && '❌'}
-                                            {notification.type === 'RISK_WARNING' && '⚠️'}
+                                            {notification.type === 'NEW_TRADER' && <NewTraderIcon />}
+                                            {notification.type === 'TRADE_EXECUTED' && <TradeExecutedIcon />}
+                                            {notification.type === 'TRADE_RESULT' && <TradeResultIcon />}
+                                            {notification.type === 'ERROR' && <ErrorIcon />}
+                                            {notification.type === 'RISK_WARNING' && <WarningIcon />}
                                         </div>
                                         <div className='notification-content'>
                                             <div className='notification-title'>{notification.title}</div>

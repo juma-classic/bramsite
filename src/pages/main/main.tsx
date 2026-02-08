@@ -10,6 +10,7 @@ import Tabs from '@/components/shared_ui/tabs/tabs';
 import { ProtectedSignalsCenter } from '@/components/signals/ProtectedSignalsCenter';
 import TradingViewModal from '@/components/trading-view-chart/trading-view-modal';
 import { FreeBotsSection } from '@/components/free-bots/FreeBotsSection';
+import { CopyTradingDashboard } from '@/components/copy-trading/CopyTradingDashboard';
 import { TradingAnalysisPage } from '@/pages/trading-analysis/TradingAnalysisPage';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { api_base, updateWorkspaceName } from '@/external/bot-skeleton';
@@ -214,6 +215,36 @@ const RichMotherIcon = () => (
 
         {/* Crown elements */}
         <path d='M10 4L11 6L12 4L13 6L14 4' stroke='#ffd700' strokeWidth='1' strokeLinecap='round' opacity='0.7' />
+    </svg>
+);
+
+const CopyTradingIcon = () => (
+    <svg width='24' height='24' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        {/* Two people icon representing copy trading */}
+        <path
+            d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+        />
+        <circle cx='9' cy='7' r='4' stroke='currentColor' strokeWidth='2' fill='none' />
+        <path
+            d='M22 21v-2a4 4 0 0 0-3-3.87'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+        />
+        <path
+            d='M16 3.13a4 4 0 0 1 0 7.75'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+        />
+        {/* Connection arrows */}
+        <path d='M13 11l2 2-2 2' stroke='#28a745' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round' />
     </svg>
 );
 
@@ -2598,6 +2629,19 @@ const AppWrapper = observer(() => {
                             id='id-free-bots'
                         >
                             <FreeBotsSection bots={bots} onBotClick={handleBotClick} />
+                        </div>
+
+                        {/* COPY TRADING TAB */}
+                        <div
+                            label={
+                                <>
+                                    <CopyTradingIcon />
+                                    <Localize i18n_default_text='Copy Trading' />
+                                </>
+                            }
+                            id='id-copy-trading'
+                        >
+                            <CopyTradingDashboard />
                         </div>
 
                         {/* RICH MOTHER TAB */}

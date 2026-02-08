@@ -56,7 +56,7 @@
         background-color: var(--general-section-2);
         flex-shrink: 0; /* Prevent statistics from shrinking */
         max-height: 100px; /* Reduced from 120px to 100px for more content space */
-        margin-bottom: 180px !important; /* Reduced from 430px to 180px to give more space for transactions */
+        margin-bottom: 140px !important; /* Reduced from 220px to 140px since button moved up */
 
         @include mobile-or-tablet-screen {
             margin: 0;
@@ -107,17 +107,25 @@
     &__footer {
         text-align: center;
         position: fixed !important; /* Fixed to viewport instead of absolute */
-        bottom: 11rem !important; /* Adjusted to match new padding - just above statistics */
+        bottom: 6rem !important; /* Moved up significantly from 1rem to 6rem to be visible on screen */
         left: 2rem !important; /* Align with panel position */
         width: 36.6rem !important; /* Match panel width */
-        height: auto !important; /* Auto height to fit button */
-        background: transparent !important; /* Remove background */
-        border: none !important; /* Remove border */
-        border-radius: 0 !important; /* Remove rounded corners */
+        height: 20px !important; /* Reduced height from 40px to 20px for minimal button */
+        background: linear-gradient(
+            135deg,
+            rgb(15 23 42 / 95%) 0%,
+            rgb(30 41 59 / 95%) 100%
+        ) !important; /* Dark gradient background */
+
+        border: 2px solid #14b8a6 !important; /* Teal border to match site branding */
+        border-radius: 12px !important; /* More rounded corners */
         z-index: 1001 !important; /* Even higher z-index to ensure visibility */
-        box-shadow: none !important; /* Remove shadow */
+        box-shadow:
+            0 8px 32px rgb(0 0 0 / 40%),
+            0 0 20px rgb(20 184 166 / 20%) !important; /* Enhanced shadow with teal glow */
+
         pointer-events: auto !important; /* Ensure events are captured */
-        backdrop-filter: none !important; /* Remove glass effect */
+        backdrop-filter: blur(10px) !important; /* Glass effect */
 
         @include flex-center(center);
 
@@ -129,70 +137,79 @@
         }
 
         &-button {
-            width: 100% !important; /* Full width to match panel */
-            height: 40px !important; /* Match Run button height */
-            margin: 0 !important; /* Remove margin */
-            background: var(--button-primary-default) !important; /* Match Run button color */
-            color: var(--text-colored-background) !important; /* Match Run button text color */
-            font-weight: 700 !important; /* Bold text */
-            font-size: 14px !important; /* Match Run button font size */
-            border-radius: 4px !important; /* Match Run button border radius */
-            box-shadow: none !important; /* Remove glow effect */
+            width: 280px !important; /* Slightly smaller to fit better */
+            height: 16px !important; /* Reduced height from 32px to 16px to fit in 20px footer */
+            margin: 2px !important; /* Reduced margin from 4px to 2px */
+            background: linear-gradient(
+                135deg,
+                #0d9488 0%,
+                #14b8a6 100%
+            ) !important; /* Teal gradient matching site branding */
+
+            color: #fff !important; /* Pure white text - forced with high specificity */
+            font-weight: 700 !important; /* Bolder text */
+            font-size: 11px !important; /* Reduced from 14px to 11px for smaller button */
+            border-radius: 6px !important; /* Smaller rounded corners */
+            box-shadow:
+                0 4px 12px rgb(13 148 136 / 40%),
+                0 0 20px rgb(20 184 166 / 20%) !important; /* Teal glow effect */
+
             cursor: pointer !important; /* Ensure button is clickable */
-            border: none !important; /* Remove border */
-            text-transform: none !important; /* Normal text transform */
-            letter-spacing: normal !important; /* Normal letter spacing */
+            border: 2px solid rgb(255 255 255 / 20%) !important; /* Subtle white border */
+            text-transform: uppercase; /* Make text more prominent */
+            letter-spacing: 1px !important; /* Better letter spacing */
             pointer-events: auto !important; /* Ensure button events work */
             transition: all 0.3s ease !important; /* Smooth transitions */
-            opacity: 1 !important; /* Full opacity - not faded */
 
             /* Override shared button component styles - target all text elements */
             .dc-btn__text,
             .dc-btn__icon,
             span,
             & > * {
-                color: var(--text-colored-background) !important;
+                color: #fff !important;
                 text-decoration: none !important;
             }
 
-            /* Ensure proper text color with maximum specificity */
+            /* Ensure white text with maximum specificity */
             &,
             &:link,
             &:visited,
             &:focus,
             &:active {
-                color: var(--text-colored-background) !important;
+                color: #fff !important;
                 text-decoration: none !important;
             }
 
             &:hover {
-                background: var(--button-primary-hover) !important; /* Match Run button hover */
-                color: var(--text-colored-background) !important;
-                transform: translateY(-2px) !important; /* Lift effect */
-                box-shadow: 0 4px 8px rgb(0 0 0 / 20%) !important; /* Subtle shadow on hover */
-                opacity: 1 !important; /* Full opacity on hover */
+                background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%) !important; /* Darker teal on hover */
+                color: #fff !important; /* Keep white text on hover */
+                transform: translateY(-2px) scale(1.02) !important; /* Lift effect */
+                box-shadow:
+                    0 6px 16px rgb(13 148 136 / 60%),
+                    0 0 30px rgb(20 184 166 / 30%) !important; /* Enhanced teal glow on hover */
 
-                /* Ensure proper text on hover for all child elements */
+                border-color: rgb(255 255 255 / 40%) !important; /* Brighter border on hover */
+
+                /* Ensure white text on hover for all child elements */
                 .dc-btn__text,
                 .dc-btn__icon,
                 span,
                 & > * {
-                    color: var(--text-colored-background) !important;
+                    color: #fff !important;
                 }
             }
 
             &:active {
-                transform: translateY(0) !important; /* Reset on click */
-                box-shadow: none !important; /* No shadow on click */
-                color: var(--text-colored-background) !important;
-                opacity: 1 !important; /* Full opacity on active */
+                transform: translateY(0) scale(1) !important; /* Reset on click */
+                box-shadow: 0 2px 8px rgb(13 148 136 / 40%) !important; /* Reduced shadow on click */
+                color: #fff !important; /* Ensure white text on active state */
 
-                /* Ensure proper text on active for all child elements */
+                /* Ensure white text on active for all child elements */
                 .dc-btn__text,
                 .dc-btn__icon,
                 span,
                 & > * {
-                    color: var(--text-colored-background) !important;
+                    color: #fff !important;
                 }
             }
         }
@@ -204,7 +221,7 @@
         flex-direction: column;
         overflow: hidden !important;
         height: calc(100% - 40px); /* Increased available height by reducing reserved space from 60px to 40px */
-        padding-bottom: 180px !important; /* Reduced from 430px to 180px to give more space for transactions */
+        padding-bottom: 140px !important; /* Reduced from 220px to 140px since button moved up */
 
         .dc-tabs {
             &__item {
@@ -227,7 +244,7 @@
         &__content {
             height: calc(100vh - 35rem); /* Increased available height by reducing from 42rem to 35rem */
             overflow: auto; /* Allow scrolling if needed */
-            padding-bottom: 180px !important; /* Reduced from 430px to 180px to give more space for transactions */
+            padding-bottom: 140px !important; /* Reduced from 220px to 140px since button moved up */
 
             &--no-stat {
                 height: var(--drawer-content-height-no-stat);

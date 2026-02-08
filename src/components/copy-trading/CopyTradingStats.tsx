@@ -2,6 +2,103 @@ import React from 'react';
 import type { CopyTradingStats } from '@/types/copy-trading.types';
 import './CopyTradingStats.scss';
 
+// Icon Components
+const UsersIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <path d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2' stroke='currentColor' strokeWidth='2' />
+        <circle cx='9' cy='7' r='4' stroke='currentColor' strokeWidth='2' fill='none' />
+        <path d='M22 21v-2a4 4 0 0 0-3-3.87' stroke='currentColor' strokeWidth='2' />
+        <path d='M16 3.13a4 4 0 0 1 0 7.75' stroke='currentColor' strokeWidth='2' />
+    </svg>
+);
+
+const ChartIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <path d='M3 3v18h18' stroke='currentColor' strokeWidth='2' />
+        <path d='M7 14l3-3 3 3 5-7' stroke='currentColor' strokeWidth='2' strokeLinejoin='round' />
+    </svg>
+);
+
+const TargetIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <circle cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='2' fill='none' />
+        <circle cx='12' cy='12' r='6' stroke='currentColor' strokeWidth='2' fill='none' />
+        <circle cx='12' cy='12' r='2' fill='currentColor' />
+    </svg>
+);
+
+const MoneyIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <circle cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='2' fill='none' />
+        <path d='M12 6v12M9 9h3.5a2.5 2.5 0 0 1 0 5H9' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+    </svg>
+);
+
+const BoltIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <path
+            d='M13 2L3 14h8l-1 8 10-12h-8l1-8z'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinejoin='round'
+            fill='none'
+        />
+    </svg>
+);
+
+const TrophyIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <path
+            d='M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2'
+            stroke='currentColor'
+            strokeWidth='2'
+        />
+        <path d='M6 9a6 6 0 0 0 12 0' stroke='currentColor' strokeWidth='2' />
+        <path d='M12 15v4M8 19h8' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+    </svg>
+);
+
+const CrownIcon = () => (
+    <svg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <path d='M2 20h20L19 8l-7 5-5-5-3 12z' fill='#ffd700' stroke='#ffd700' strokeWidth='2' strokeLinejoin='round' />
+        <circle cx='12' cy='6' r='2' fill='#ffd700' />
+    </svg>
+);
+
+const TrendUpIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <path
+            d='M23 6l-9.5 9.5-5-5L1 18'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+        />
+        <path d='M17 6h6v6' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
+    </svg>
+);
+
+const ClockIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <circle cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='2' fill='none' />
+        <path d='M12 6v6l4 2' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+    </svg>
+);
+
+const NewIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <rect x='3' y='3' width='18' height='18' rx='2' stroke='currentColor' strokeWidth='2' fill='none' />
+        <path d='M12 8v8M8 12h8' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+    </svg>
+);
+
+const DiamondIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <path d='M12 2L2 9l10 13L22 9 12 2z' stroke='currentColor' strokeWidth='2' strokeLinejoin='round' fill='none' />
+        <path d='M2 9h20M12 2v20' stroke='currentColor' strokeWidth='2' />
+    </svg>
+);
+
 interface CopyTradingStatsProps {
     stats: CopyTradingStats;
 }
@@ -20,7 +117,9 @@ export const CopyTradingStats: React.FC<CopyTradingStatsProps> = ({ stats }) => 
                 <div className='stats-grid'>
                     <div className='stat-card'>
                         <div className='stat-header'>
-                            <span className='stat-icon'>👥</span>
+                            <span className='stat-icon'>
+                                <UsersIcon />
+                            </span>
                             <span className='stat-title'>Total Traders</span>
                         </div>
                         <div className='stat-value'>{stats.totalCopyTraders}</div>
@@ -29,7 +128,9 @@ export const CopyTradingStats: React.FC<CopyTradingStatsProps> = ({ stats }) => 
 
                     <div className='stat-card'>
                         <div className='stat-header'>
-                            <span className='stat-icon'>📊</span>
+                            <span className='stat-icon'>
+                                <ChartIcon />
+                            </span>
                             <span className='stat-title'>Total Trades</span>
                         </div>
                         <div className='stat-value'>{stats.totalCopyTrades}</div>
@@ -38,7 +139,9 @@ export const CopyTradingStats: React.FC<CopyTradingStatsProps> = ({ stats }) => 
 
                     <div className='stat-card'>
                         <div className='stat-header'>
-                            <span className='stat-icon'>🎯</span>
+                            <span className='stat-icon'>
+                                <TargetIcon />
+                            </span>
                             <span className='stat-title'>Win Rate</span>
                         </div>
                         <div className='stat-value'>{winRate.toFixed(1)}%</div>
@@ -47,7 +150,9 @@ export const CopyTradingStats: React.FC<CopyTradingStatsProps> = ({ stats }) => 
 
                     <div className='stat-card'>
                         <div className='stat-header'>
-                            <span className='stat-icon'>💰</span>
+                            <span className='stat-icon'>
+                                <MoneyIcon />
+                            </span>
                             <span className='stat-title'>Total Profit</span>
                         </div>
                         <div className={`stat-value ${stats.totalCopyProfit >= 0 ? 'positive' : 'negative'}`}>
@@ -58,7 +163,9 @@ export const CopyTradingStats: React.FC<CopyTradingStatsProps> = ({ stats }) => 
 
                     <div className='stat-card'>
                         <div className='stat-header'>
-                            <span className='stat-icon'>⚡</span>
+                            <span className='stat-icon'>
+                                <BoltIcon />
+                            </span>
                             <span className='stat-title'>Avg Execution</span>
                         </div>
                         <div className='stat-value'>{stats.averageExecutionTime.toFixed(0)}ms</div>
@@ -70,13 +177,19 @@ export const CopyTradingStats: React.FC<CopyTradingStatsProps> = ({ stats }) => 
             {/* Top Performers */}
             {topTraders.length > 0 && (
                 <div className='top-performers'>
-                    <h3>🏆 Top Performing Traders</h3>
+                    <h3>
+                        <TrophyIcon /> Top Performing Traders
+                    </h3>
                     <div className='performers-list'>
                         {topTraders.map(([traderId, traderStats], index) => (
                             <div key={traderId} className='performer-card'>
                                 <div className='performer-rank'>
                                     <span className='rank-number'>#{index + 1}</span>
-                                    {index === 0 && <span className='crown'>👑</span>}
+                                    {index === 0 && (
+                                        <span className='crown'>
+                                            <CrownIcon />
+                                        </span>
+                                    )}
                                 </div>
 
                                 <div className='performer-info'>
@@ -103,10 +216,14 @@ export const CopyTradingStats: React.FC<CopyTradingStatsProps> = ({ stats }) => 
 
             {/* Performance Chart Placeholder */}
             <div className='performance-chart'>
-                <h3>📈 Performance Overview</h3>
+                <h3>
+                    <TrendUpIcon /> Performance Overview
+                </h3>
                 <div className='chart-placeholder'>
                     <div className='chart-info'>
-                        <span className='chart-icon'>📊</span>
+                        <span className='chart-icon'>
+                            <ChartIcon />
+                        </span>
                         <div className='chart-text'>
                             <h4>Performance Chart</h4>
                             <p>Detailed performance charts will be available in future updates</p>
@@ -159,10 +276,14 @@ export const CopyTradingStats: React.FC<CopyTradingStatsProps> = ({ stats }) => 
 
             {/* Recent Activity */}
             <div className='recent-activity'>
-                <h3>🕒 Recent Activity Summary</h3>
+                <h3>
+                    <ClockIcon /> Recent Activity Summary
+                </h3>
                 <div className='activity-grid'>
                     <div className='activity-item'>
-                        <span className='activity-icon'>🆕</span>
+                        <span className='activity-icon'>
+                            <NewIcon />
+                        </span>
                         <div className='activity-content'>
                             <div className='activity-title'>New Traders</div>
                             <div className='activity-value'>
@@ -177,7 +298,9 @@ export const CopyTradingStats: React.FC<CopyTradingStatsProps> = ({ stats }) => 
                     </div>
 
                     <div className='activity-item'>
-                        <span className='activity-icon'>📈</span>
+                        <span className='activity-icon'>
+                            <TrendUpIcon />
+                        </span>
                         <div className='activity-content'>
                             <div className='activity-title'>Recent Trades</div>
                             <div className='activity-value'>
@@ -192,7 +315,9 @@ export const CopyTradingStats: React.FC<CopyTradingStatsProps> = ({ stats }) => 
                     </div>
 
                     <div className='activity-item'>
-                        <span className='activity-icon'>💎</span>
+                        <span className='activity-icon'>
+                            <DiamondIcon />
+                        </span>
                         <div className='activity-content'>
                             <div className='activity-title'>Best Performer</div>
                             <div className='activity-value'>
@@ -203,7 +328,9 @@ export const CopyTradingStats: React.FC<CopyTradingStatsProps> = ({ stats }) => 
                     </div>
 
                     <div className='activity-item'>
-                        <span className='activity-icon'>⚡</span>
+                        <span className='activity-icon'>
+                            <BoltIcon />
+                        </span>
                         <div className='activity-content'>
                             <div className='activity-title'>Execution Speed</div>
                             <div className='activity-value'>

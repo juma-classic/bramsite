@@ -3,6 +3,87 @@ import { copyTradingService } from '@/services/copy-trading.service';
 import type { CopyTrader } from '@/types/copy-trading.types';
 import './AddCopyTraderModal.scss';
 
+// Icon Components
+const UserIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <circle cx='12' cy='8' r='4' stroke='currentColor' strokeWidth='2' fill='none' />
+        <path d='M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2' stroke='currentColor' strokeWidth='2' />
+    </svg>
+);
+
+const ClipboardIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <rect x='8' y='2' width='8' height='4' rx='1' stroke='currentColor' strokeWidth='2' fill='none' />
+        <path
+            d='M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2'
+            stroke='currentColor'
+            strokeWidth='2'
+        />
+    </svg>
+);
+
+const LockIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <rect x='5' y='11' width='14' height='10' rx='2' stroke='currentColor' strokeWidth='2' fill='none' />
+        <path d='M8 11V7a4 4 0 0 1 8 0v4' stroke='currentColor' strokeWidth='2' />
+    </svg>
+);
+
+const SearchIcon = () => (
+    <svg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <circle cx='11' cy='11' r='8' stroke='currentColor' strokeWidth='2' fill='none' />
+        <path d='M21 21l-4.35-4.35' stroke='currentColor' strokeWidth='2' strokeLinecap='round' />
+    </svg>
+);
+
+const HourglassIcon = () => (
+    <svg width='16' height='16' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <path
+            d='M6 2h12v6l-6 4 6 4v6H6v-6l6-4-6-4V2z'
+            stroke='currentColor'
+            strokeWidth='2'
+            strokeLinejoin='round'
+            fill='none'
+        />
+    </svg>
+);
+
+const CheckIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <circle cx='12' cy='12' r='10' stroke='#28a745' strokeWidth='2' fill='none' />
+        <path d='M9 12l2 2 4-4' stroke='#28a745' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' />
+    </svg>
+);
+
+const XIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <circle cx='12' cy='12' r='10' stroke='#dc3545' strokeWidth='2' fill='none' />
+        <path d='M15 9l-6 6M9 9l6 6' stroke='#dc3545' strokeWidth='2' strokeLinecap='round' />
+    </svg>
+);
+
+const WarningIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <path d='M12 2L2 20h20L12 2z' stroke='#ffc107' strokeWidth='2' strokeLinejoin='round' fill='none' />
+        <path d='M12 9v4M12 17h.01' stroke='#ffc107' strokeWidth='2' strokeLinecap='round' />
+    </svg>
+);
+
+const TargetIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <circle cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='2' fill='none' />
+        <circle cx='12' cy='12' r='6' stroke='currentColor' strokeWidth='2' fill='none' />
+        <circle cx='12' cy='12' r='2' fill='currentColor' />
+    </svg>
+);
+
+const ChartIcon = () => (
+    <svg width='20' height='20' viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        <path d='M3 3v18h18' stroke='currentColor' strokeWidth='2' />
+        <path d='M7 14l3-3 3 3 5-7' stroke='currentColor' strokeWidth='2' strokeLinejoin='round' />
+    </svg>
+);
+
 interface AddCopyTraderModalProps {
     onClose: () => void;
     onTraderAdded: () => void;
@@ -177,7 +258,9 @@ export const AddCopyTraderModal: React.FC<AddCopyTraderModalProps> = ({ onClose,
         <div className='modal-overlay'>
             <div className='add-copy-trader-modal'>
                 <div className='modal-header'>
-                    <h2>👤 Add Copy Trader</h2>
+                    <h2>
+                        <UserIcon /> Add Copy Trader
+                    </h2>
                     <button className='close-btn' onClick={onClose}>
                         ×
                     </button>
@@ -186,7 +269,9 @@ export const AddCopyTraderModal: React.FC<AddCopyTraderModalProps> = ({ onClose,
                 <form onSubmit={handleSubmit} className='modal-content'>
                     {/* Basic Information */}
                     <div className='form-section'>
-                        <h3>📋 Basic Information</h3>
+                        <h3>
+                            <ClipboardIcon /> Basic Information
+                        </h3>
 
                         <div className='form-group'>
                             <label>Trader Name *</label>
@@ -230,7 +315,15 @@ export const AddCopyTraderModal: React.FC<AddCopyTraderModalProps> = ({ onClose,
                                     onClick={handleValidateToken}
                                     disabled={isValidating || !formData.apiToken.trim()}
                                 >
-                                    {isValidating ? '⏳' : '🔍'} Validate
+                                    {isValidating ? (
+                                        <>
+                                            <HourglassIcon /> Validating...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <SearchIcon /> Validate
+                                        </>
+                                    )}
                                 </button>
                             </div>
 
@@ -238,7 +331,9 @@ export const AddCopyTraderModal: React.FC<AddCopyTraderModalProps> = ({ onClose,
                                 <div className={`validation-result ${validationResult.isValid ? 'success' : 'error'}`}>
                                     {validationResult.isValid ? (
                                         <div>
-                                            <div className='validation-icon'>✅</div>
+                                            <div className='validation-icon'>
+                                                <CheckIcon />
+                                            </div>
                                             <div className='validation-info'>
                                                 <div>Token is valid!</div>
                                                 {validationResult.accountInfo && (
