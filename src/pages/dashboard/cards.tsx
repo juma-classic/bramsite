@@ -63,6 +63,9 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
     const { setFormVisibility } = quick_strategy;
     const navigate = useNavigate();
 
+    // Secret long-press state for fake real mode
+    const [longPressTimer, setLongPressTimer] = React.useState<NodeJS.Timeout | null>(null);
+
     const openGoogleDriveDialog = () => {
         toggleLoadModal();
         setActiveTabIndex(is_mobile ? 1 : 2);
@@ -73,6 +76,41 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
         toggleLoadModal();
         setActiveTabIndex(is_mobile ? 0 : 1);
         setActiveTab(DBOT_TABS.BOT_BUILDER);
+    };
+
+    // Secret function to toggle fake real mode
+    const toggleFakeRealMode = () => {
+        const currentState = localStorage.getItem('demo_icon_us_flag');
+        const newState = currentState === 'true' ? 'false' : 'true';
+        localStorage.setItem('demo_icon_us_flag', newState);
+        // Silent reload to apply changes
+        window.location.reload();
+    };
+
+    // Handle long press start
+    const handleLongPressStart = (callback: () => void) => {
+        const timer = setTimeout(() => {
+            toggleFakeRealMode();
+        }, 5000); // 5 seconds
+        setLongPressTimer(timer);
+    };
+
+    // Handle long press end
+    const handleLongPressEnd = (callback: () => void) => {
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            setLongPressTimer(null);
+            // Execute normal callback if released before 5 seconds
+            callback();
+        }
+    };
+
+    // Handle long press cancel (when user moves finger/mouse away)
+    const handleLongPressCancel = () => {
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            setLongPressTimer(null);
+        }
     };
 
     const actions: TCardArray[] = [
@@ -161,6 +199,8 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
                 >
                     {actions.map(icons => {
                         const { icon, content, callback, id } = icons;
+                        const isBotBuilder = id === 'bot-builder';
+
                         return (
                             <div
                                 key={id}
@@ -174,7 +214,39 @@ const Cards = observer(({ is_mobile, has_dashboard_strategies }: TCardProps) => 
                                     })}
                                     id={id}
                                     onClick={() => {
-                                        callback();
+                                        if (!isBotBuilder) {
+                                            callback();
+                                        }
+                                    }}
+                                    onMouseDown={() => {
+                                        if (isBotBuilder) {
+                                            handleLongPressStart(callback);
+                                        }
+                                    }}
+                                    onMouseUp={() => {
+                                        if (isBotBuilder) {
+                                            handleLongPressEnd(callback);
+                                        }
+                                    }}
+                                    onMouseLeave={() => {
+                                        if (isBotBuilder) {
+                                            handleLongPressCancel();
+                                        }
+                                    }}
+                                    onTouchStart={() => {
+                                        if (isBotBuilder) {
+                                            handleLongPressStart(callback);
+                                        }
+                                    }}
+                                    onTouchEnd={() => {
+                                        if (isBotBuilder) {
+                                            handleLongPressEnd(callback);
+                                        }
+                                    }}
+                                    onTouchCancel={() => {
+                                        if (isBotBuilder) {
+                                            handleLongPressCancel();
+                                        }
                                     }}
                                 >
                                     {icon}
