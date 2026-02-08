@@ -132,7 +132,7 @@ export const ZenUltraFastEngine = forwardRef<any, ZenUltraFastEngineProps>(
             // Initialize Deriv WebSocket service
             derivSocketRef.current = new DerivSocketService({
                 symbol: settings.market,
-                appId: '119760',
+                appId: '80836',
                 reconnectInterval: 3000,
                 heartbeatInterval: 30000,
             });
