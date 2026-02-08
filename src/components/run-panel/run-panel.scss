@@ -8,7 +8,7 @@
 
     &__container {
         height: calc(var(--bot-content-height) * 0.7) !important; /* Increased height from 0.5 to 0.7 for more space */
-        top: 2rem !important; /* Moved higher - was 4rem, now 2rem for more space */
+        top: -4.5rem !important; /* Moved up to align with navigation menu (approximately 72px up) */
         width: 36.6rem !important;
         left: 2rem !important; /* Move to left side instead of right */
         right: auto !important; /* Remove right positioning */
@@ -56,7 +56,7 @@
         background-color: var(--general-section-2);
         flex-shrink: 0; /* Prevent statistics from shrinking */
         max-height: 100px; /* Reduced from 120px to 100px for more content space */
-        margin-bottom: 120px !important; /* Increased from 80px to 120px to prevent Reset button overlay */
+        margin-bottom: 430px !important; /* Increased to 430px to fully expose statistics above Reset button */
 
         @include mobile-or-tablet-screen {
             margin: 0;
@@ -107,25 +107,17 @@
     &__footer {
         text-align: center;
         position: fixed !important; /* Fixed to viewport instead of absolute */
-        bottom: 3rem !important; /* Reduced from 4rem to 3rem for more content space */
+        bottom: 10.375rem !important; /* Moved up 70px higher (approximately 4.375rem more from 6rem) */
         left: 2rem !important; /* Align with panel position */
         width: 36.6rem !important; /* Match panel width */
-        height: 70px !important; /* Reduced height from 90px to 70px */
-        background: linear-gradient(
-            135deg,
-            rgb(15 23 42 / 95%) 0%,
-            rgb(30 41 59 / 95%) 100%
-        ) !important; /* Dark gradient background */
-
-        border: 2px solid #14b8a6 !important; /* Teal border to match site branding */
-        border-radius: 12px !important; /* More rounded corners */
+        height: 20px !important; /* Reduced height from 40px to 20px for minimal button */
+        background: transparent !important; /* Remove background */
+        border: none !important; /* Remove border */
+        border-radius: 0 !important; /* Remove rounded corners */
         z-index: 1001 !important; /* Even higher z-index to ensure visibility */
-        box-shadow:
-            0 8px 32px rgb(0 0 0 / 40%),
-            0 0 20px rgb(20 184 166 / 20%) !important; /* Enhanced shadow with teal glow */
-
+        box-shadow: none !important; /* Remove shadow */
         pointer-events: auto !important; /* Ensure events are captured */
-        backdrop-filter: blur(10px) !important; /* Glass effect */
+        backdrop-filter: none !important; /* Remove glass effect */
 
         @include flex-center(center);
 
@@ -138,8 +130,8 @@
 
         &-button {
             width: 280px !important; /* Slightly smaller to fit better */
-            height: 40px !important; /* Reduced height from 50px to 40px for more content space */
-            margin: 6px !important; /* Reduced margin from 8px to 6px */
+            height: 16px !important; /* Reduced height from 32px to 16px to fit in 20px footer */
+            margin: 2px !important; /* Reduced margin from 4px to 2px */
             background: linear-gradient(
                 135deg,
                 #0d9488 0%,
@@ -148,8 +140,8 @@
 
             color: #fff !important; /* Pure white text - forced with high specificity */
             font-weight: 700 !important; /* Bolder text */
-            font-size: 16px !important; /* Reduced from 18px to 16px */
-            border-radius: 8px !important; /* More rounded corners */
+            font-size: 11px !important; /* Reduced from 14px to 11px for smaller button */
+            border-radius: 6px !important; /* Smaller rounded corners */
             box-shadow:
                 0 4px 12px rgb(13 148 136 / 40%),
                 0 0 20px rgb(20 184 166 / 20%) !important; /* Teal glow effect */
@@ -221,7 +213,7 @@
         flex-direction: column;
         overflow: hidden !important;
         height: calc(100% - 40px); /* Increased available height by reducing reserved space from 60px to 40px */
-        padding-bottom: 120px !important; /* Increased from 80px to 120px to prevent Reset button overlay */
+        padding-bottom: 430px !important; /* Increased to 430px to fully expose content above Reset button */
 
         .dc-tabs {
             &__item {
@@ -244,7 +236,7 @@
         &__content {
             height: calc(100vh - 35rem); /* Increased available height by reducing from 42rem to 35rem */
             overflow: auto; /* Allow scrolling if needed */
-            padding-bottom: 120px !important; /* Added padding to prevent Reset button overlay */
+            padding-bottom: 430px !important; /* Increased to 430px to fully expose content above Reset button */
 
             &--no-stat {
                 height: var(--drawer-content-height-no-stat);
@@ -261,7 +253,7 @@
 
             &--summary-tab {
                 padding: 0.8rem 1.6rem;
-                padding-bottom: 120px; /* Increased from 60px to 120px to prevent Reset button overlay */
+                padding-bottom: 140px; /* Reduced from 220px to 140px since button moved up */
             }
         }
     }
