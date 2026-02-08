@@ -1,5 +1,5 @@
 {
-    "name": "tradermaster-theme-builder",
+    "name": "bramfx-theme-builder",
     "version": "1.0.0",
     "description": "Build system for integrating main SCSS theme with standalone HTML files",
     "scripts": {
