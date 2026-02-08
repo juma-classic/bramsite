@@ -56,7 +56,7 @@
         background-color: var(--general-section-2);
         flex-shrink: 0; /* Prevent statistics from shrinking */
         max-height: 100px; /* Reduced from 120px to 100px for more content space */
-        margin-bottom: 80px !important; /* Reduced from 100px to 80px */
+        margin-bottom: 120px !important; /* Increased from 80px to 120px to prevent Reset button overlay */
 
         @include mobile-or-tablet-screen {
             margin: 0;
@@ -221,7 +221,7 @@
         flex-direction: column;
         overflow: hidden !important;
         height: calc(100% - 40px); /* Increased available height by reducing reserved space from 60px to 40px */
-        padding-bottom: 80px !important; /* Reduced padding from 100px to 80px */
+        padding-bottom: 120px !important; /* Increased from 80px to 120px to prevent Reset button overlay */
 
         .dc-tabs {
             &__item {
@@ -244,6 +244,7 @@
         &__content {
             height: calc(100vh - 35rem); /* Increased available height by reducing from 42rem to 35rem */
             overflow: auto; /* Allow scrolling if needed */
+            padding-bottom: 120px !important; /* Added padding to prevent Reset button overlay */
 
             &--no-stat {
                 height: var(--drawer-content-height-no-stat);
@@ -260,7 +261,7 @@
 
             &--summary-tab {
                 padding: 0.8rem 1.6rem;
-                padding-bottom: 60px; /* Reduced padding from 80px to 60px */
+                padding-bottom: 120px; /* Increased from 60px to 120px to prevent Reset button overlay */
             }
         }
     }
