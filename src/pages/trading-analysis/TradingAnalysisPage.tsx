@@ -2,6 +2,21 @@ import React, { useState, useEffect, useRef } from 'react';
 import { derivAPIService } from '@/services/deriv-api.service';
 import { api_base } from '@/external/bot-skeleton';
 import { useStore } from '@/hooks/useStore';
+import {
+    LabelPairedCircleCheckMdFillIcon,
+    LabelPairedCircleExclamationMdFillIcon,
+    LabelPairedCircleInfoMdFillIcon,
+    LabelPairedChartLineMdRegularIcon,
+    LabelPairedLocationCrosshairsMdRegularIcon,
+    LabelPairedBellMdRegularIcon,
+    LabelPairedChartMixedMdRegularIcon,
+    LabelPairedCircleDollarMdRegularIcon,
+    LabelPairedStarMdFillIcon,
+    LabelPairedLightbulbMdRegularIcon,
+    LabelPairedGearMdRegularIcon,
+    LabelPairedCircleStarMdFillIcon,
+    LabelPairedHandsHoldingDiamondMdFillIcon,
+} from '@deriv/quill-icons/LabelPaired';
 import './TradingAnalysisPage.scss';
 
 interface TickData {
@@ -430,7 +445,7 @@ export const TradingAnalysisPage: React.FC = () => {
             if (detectedPatterns.length > 0) {
                 detectedPatterns.forEach(pattern => {
                     if (pattern.confidence >= 75) {
-                        addAlert(`🎯 ${pattern.description}`, 'info');
+                        addAlert(`${pattern.description}`, 'info');
                     }
                 });
             }
@@ -499,8 +514,8 @@ export const TradingAnalysisPage: React.FC = () => {
 
             addAlert(
                 isWin
-                    ? `✅ Trade won! Profit: +${profit.toFixed(2)} ${currency}`
-                    : `❌ Trade lost: ${profit.toFixed(2)} ${currency}`,
+                    ? `Trade won! Profit: +${profit.toFixed(2)} ${currency}`
+                    : `Trade lost: ${profit.toFixed(2)} ${currency}`,
                 isWin ? 'success' : 'warning'
             );
         }, 10000);
@@ -696,7 +711,16 @@ export const TradingAnalysisPage: React.FC = () => {
                             <div className='alerts-section'>
                                 {alerts.map(alert => (
                                     <div key={alert.id} className={`alert alert-${alert.type}`}>
-                                        {alert.message}
+                                        {alert.type === 'success' && (
+                                            <LabelPairedCircleCheckMdFillIcon className='alert-icon' />
+                                        )}
+                                        {alert.type === 'warning' && (
+                                            <LabelPairedCircleExclamationMdFillIcon className='alert-icon' />
+                                        )}
+                                        {alert.type === 'info' && (
+                                            <LabelPairedCircleInfoMdFillIcon className='alert-icon' />
+                                        )}
+                                        <span>{alert.message}</span>
                                     </div>
                                 ))}
                             </div>
@@ -743,7 +767,10 @@ export const TradingAnalysisPage: React.FC = () => {
                                     <div className='strategy-recommendation'>
                                         {getStrategyRecommendation().recommendation}
                                     </div>
-                                    <div className='strategy-action'>💡 {getStrategyRecommendation().action}</div>
+                                    <div className='strategy-action'>
+                                        <LabelPairedLightbulbMdRegularIcon className='strategy-icon' />
+                                        {getStrategyRecommendation().action}
+                                    </div>
                                 </div>
                             </div>
                         )}
@@ -844,11 +871,13 @@ export const TradingAnalysisPage: React.FC = () => {
                                                     <td>{trade.exitPrice ? trade.exitPrice.toFixed(2) : '-'}</td>
                                                     <td>
                                                         <span className={`result-badge ${trade.result}`}>
-                                                            {trade.result === 'pending'
-                                                                ? '⏳'
-                                                                : trade.result === 'win'
-                                                                  ? '✅'
-                                                                  : '❌'}
+                                                            {trade.result === 'pending' ? (
+                                                                <LabelPairedCircleInfoMdFillIcon />
+                                                            ) : trade.result === 'win' ? (
+                                                                <LabelPairedCircleCheckMdFillIcon />
+                                                            ) : (
+                                                                <LabelPairedCircleExclamationMdFillIcon />
+                                                            )}
                                                         </span>
                                                     </td>
                                                     <td
@@ -1096,7 +1125,9 @@ export const TradingAnalysisPage: React.FC = () => {
                         <h3>Digit Frequency Tools</h3>
                         <div className='apps-grid'>
                             <div className='app-card'>
-                                <div className='app-icon'>📊</div>
+                                <div className='app-icon'>
+                                    <LabelPairedChartMixedMdRegularIcon />
+                                </div>
                                 <h4>Frequency Analyzer</h4>
                                 <p>Analyze digit frequency patterns across multiple markets simultaneously</p>
                                 <button
@@ -1107,7 +1138,9 @@ export const TradingAnalysisPage: React.FC = () => {
                                 </button>
                             </div>
                             <div className='app-card'>
-                                <div className='app-icon'>🎯</div>
+                                <div className='app-icon'>
+                                    <LabelPairedLocationCrosshairsMdRegularIcon />
+                                </div>
                                 <h4>Pattern Scanner</h4>
                                 <p>Scan for repeating patterns and streaks in real-time market data</p>
                                 <button
@@ -1118,7 +1151,9 @@ export const TradingAnalysisPage: React.FC = () => {
                                 </button>
                             </div>
                             <div className='app-card'>
-                                <div className='app-icon'>📈</div>
+                                <div className='app-icon'>
+                                    <LabelPairedChartLineMdRegularIcon />
+                                </div>
                                 <h4>Trend Predictor</h4>
                                 <p>AI-powered trend prediction based on historical data analysis</p>
                                 <button
@@ -1129,7 +1164,9 @@ export const TradingAnalysisPage: React.FC = () => {
                                 </button>
                             </div>
                             <div className='app-card'>
-                                <div className='app-icon'>🔔</div>
+                                <div className='app-icon'>
+                                    <LabelPairedBellMdRegularIcon />
+                                </div>
                                 <h4>Alert Manager</h4>
                                 <p>Set custom alerts for specific patterns, streaks, or probability thresholds</p>
                                 <button
@@ -1140,7 +1177,9 @@ export const TradingAnalysisPage: React.FC = () => {
                                 </button>
                             </div>
                             <div className='app-card'>
-                                <div className='app-icon'>📉</div>
+                                <div className='app-icon'>
+                                    <LabelPairedGearMdRegularIcon />
+                                </div>
                                 <h4>Risk Calculator</h4>
                                 <p>Calculate optimal stake sizes and risk management strategies</p>
                                 <button
@@ -1151,7 +1190,9 @@ export const TradingAnalysisPage: React.FC = () => {
                                 </button>
                             </div>
                             <div className='app-card'>
-                                <div className='app-icon'>🤖</div>
+                                <div className='app-icon'>
+                                    <LabelPairedGearMdRegularIcon />
+                                </div>
                                 <h4>Bot Builder</h4>
                                 <p>Create automated trading bots based on your analysis strategies</p>
                                 <button className='app-btn' onClick={() => (window.location.href = '#/bot-builder')}>
@@ -1168,7 +1209,9 @@ export const TradingAnalysisPage: React.FC = () => {
                         <h3>Smart Trading Badge</h3>
                         <div className='badge-container'>
                             <div className='badge-display'>
-                                <div className='badge-icon'>🏆</div>
+                                <div className='badge-icon'>
+                                    <LabelPairedCircleStarMdFillIcon />
+                                </div>
                                 <div className='badge-level'>Level {Math.floor(totalTrades / 10) + 1}</div>
                                 <div className='badge-title'>
                                     {totalTrades === 0
@@ -1197,21 +1240,27 @@ export const TradingAnalysisPage: React.FC = () => {
                                 <h4>Your Statistics</h4>
                                 <div className='stat-grid'>
                                     <div className='stat-item'>
-                                        <div className='stat-icon'>📊</div>
+                                        <div className='stat-icon'>
+                                            <LabelPairedChartMixedMdRegularIcon />
+                                        </div>
                                         <div className='stat-details'>
                                             <div className='stat-label'>Total Trades</div>
                                             <div className='stat-number'>{totalTrades}</div>
                                         </div>
                                     </div>
                                     <div className='stat-item'>
-                                        <div className='stat-icon'>🎯</div>
+                                        <div className='stat-icon'>
+                                            <LabelPairedLocationCrosshairsMdRegularIcon />
+                                        </div>
                                         <div className='stat-details'>
                                             <div className='stat-label'>Win Rate</div>
                                             <div className='stat-number'>{winRate}%</div>
                                         </div>
                                     </div>
                                     <div className='stat-item'>
-                                        <div className='stat-icon'>💰</div>
+                                        <div className='stat-icon'>
+                                            <LabelPairedCircleDollarMdRegularIcon />
+                                        </div>
                                         <div className='stat-details'>
                                             <div className='stat-label'>Total Profit</div>
                                             <div
@@ -1223,7 +1272,9 @@ export const TradingAnalysisPage: React.FC = () => {
                                         </div>
                                     </div>
                                     <div className='stat-item'>
-                                        <div className='stat-icon'>🔥</div>
+                                        <div className='stat-icon'>
+                                            <LabelPairedStarMdFillIcon />
+                                        </div>
                                         <div className='stat-details'>
                                             <div className='stat-label'>Best Streak</div>
                                             <div className='stat-number'>
@@ -1252,27 +1303,39 @@ export const TradingAnalysisPage: React.FC = () => {
                                 <h4>Achievements</h4>
                                 <div className='achievements-grid'>
                                     <div className={`achievement ${totalTrades >= 1 ? 'unlocked' : 'locked'}`}>
-                                        <div className='achievement-icon'>🎯</div>
+                                        <div className='achievement-icon'>
+                                            <LabelPairedLocationCrosshairsMdRegularIcon />
+                                        </div>
                                         <div className='achievement-name'>First Trade</div>
                                     </div>
                                     <div className={`achievement ${totalTrades >= 10 ? 'unlocked' : 'locked'}`}>
-                                        <div className='achievement-icon'>📈</div>
+                                        <div className='achievement-icon'>
+                                            <LabelPairedChartLineMdRegularIcon />
+                                        </div>
                                         <div className='achievement-name'>10 Trades</div>
                                     </div>
                                     <div className={`achievement ${winRate >= 60 ? 'unlocked' : 'locked'}`}>
-                                        <div className='achievement-icon'>🏆</div>
+                                        <div className='achievement-icon'>
+                                            <LabelPairedCircleStarMdFillIcon />
+                                        </div>
                                         <div className='achievement-name'>60% Win Rate</div>
                                     </div>
                                     <div className={`achievement ${totalProfit >= 100 ? 'unlocked' : 'locked'}`}>
-                                        <div className='achievement-icon'>💎</div>
+                                        <div className='achievement-icon'>
+                                            <LabelPairedHandsHoldingDiamondMdFillIcon />
+                                        </div>
                                         <div className='achievement-name'>100+ Profit</div>
                                     </div>
                                     <div className={`achievement ${totalTrades >= 50 ? 'unlocked' : 'locked'}`}>
-                                        <div className='achievement-icon'>⭐</div>
+                                        <div className='achievement-icon'>
+                                            <LabelPairedStarMdFillIcon />
+                                        </div>
                                         <div className='achievement-name'>50 Trades</div>
                                     </div>
                                     <div className={`achievement ${totalTrades >= 100 ? 'unlocked' : 'locked'}`}>
-                                        <div className='achievement-icon'>🌟</div>
+                                        <div className='achievement-icon'>
+                                            <LabelPairedStarMdFillIcon />
+                                        </div>
                                         <div className='achievement-name'>Century</div>
                                     </div>
                                 </div>

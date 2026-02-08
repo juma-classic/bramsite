@@ -553,6 +553,15 @@
         font-weight: 500;
         box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
         animation: slide-in 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        .alert-icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
 
         &.alert-success {
             background: #10b981;
@@ -668,6 +677,14 @@
         .strategy-action {
             font-size: 0.9rem;
             color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+
+            .strategy-icon {
+                width: 18px;
+                height: 18px;
+            }
         }
     }
 }
@@ -889,6 +906,26 @@
 
                 .result-badge {
                     font-size: 1.2rem;
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    svg {
+                        width: 20px;
+                        height: 20px;
+                    }
+
+                    &.pending svg {
+                        color: #3b82f6;
+                    }
+
+                    &.win svg {
+                        color: #10b981;
+                    }
+
+                    &.loss svg {
+                        color: #ef4444;
+                    }
                 }
             }
 
@@ -1029,6 +1066,15 @@
             .app-icon {
                 font-size: 3rem;
                 margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #1e3a8a;
+
+                svg {
+                    width: 48px;
+                    height: 48px;
+                }
             }
 
             h4 {
@@ -1095,6 +1141,15 @@
             .badge-icon {
                 font-size: 4rem;
                 margin-bottom: 1rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #ffd700;
+
+                svg {
+                    width: 64px;
+                    height: 64px;
+                }
             }
 
             .badge-level {
@@ -1155,6 +1210,15 @@
 
                     .stat-icon {
                         font-size: 2rem;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: #1e3a8a;
+
+                        svg {
+                            width: 32px;
+                            height: 32px;
+                        }
                     }
 
                     .stat-details {
@@ -1207,6 +1271,14 @@
 
                         .achievement-icon {
                             font-size: 2.5rem;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            svg {
+                                width: 40px;
+                                height: 40px;
+                            }
                         }
 
                         .achievement-name {
@@ -1224,6 +1296,14 @@
                         .achievement-icon {
                             font-size: 2.5rem;
                             filter: grayscale(100%);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+
+                            svg {
+                                width: 40px;
+                                height: 40px;
+                            }
                         }
 
                         .achievement-name {
