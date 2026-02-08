@@ -28,7 +28,7 @@ class DerivConnectionPoolService {
     // App ID Configuration - TEMPORARY: Use single App ID to resolve connection issues
     private readonly appIdConfigs: AppIdConfig[] = [
         {
-            appId: '119760',
+            appId: '80836',
             type: ConnectionType.CORE,
             description: 'All Trading Features (Consolidated)',
             features: ['Bot Builder', 'Trading', 'Analysis', 'Signals', 'Fast Lane'],
@@ -199,7 +199,7 @@ class DerivConnectionPoolService {
      */
     public getAppId(type: ConnectionType): string {
         const config = this.appIdConfigs.find(c => c.type === type);
-        return config?.appId || '119760';
+        return config?.appId || '80836';
     }
 
     /**

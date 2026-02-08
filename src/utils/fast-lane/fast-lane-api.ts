@@ -44,7 +44,7 @@ type EventCallback = (...args: any[]) => void;
 export class FastLaneAPI {
     private ws: WebSocket | null = null;
     private authToken: string = '';
-    private appId: string = '119760';
+    private appId: string = '80836';
     private requestId: number = 1;
     private callbacks: Map<number, { resolve: (value: any) => void; reject: (reason?: any) => void }> = new Map();
     private subscriptions: Map<string, (data: any) => void> = new Map();

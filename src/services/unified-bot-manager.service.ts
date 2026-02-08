@@ -549,7 +549,7 @@ class UnifiedBotManagerService {
     private async loadIntoBotBuilder(xmlContent: string, config: BotConfiguration): Promise<void> {
         console.log('🤖 Loading bot into builder...');
 
-        // Ensure correct app ID is set (119760 for production trading)
+        // Ensure correct app ID is set (80836 for production trading)
         this.ensureCorrectAppId(xmlContent);
 
         // Method 1: Use load modal (most reliable)
@@ -657,7 +657,7 @@ class UnifiedBotManagerService {
      */
     private ensureCorrectAppId(xmlContent: string): void {
         // Set the correct app ID for production trading
-        const APP_ID = '119760';
+        const APP_ID = '80836';
         
         if (typeof window !== 'undefined') {
             const windowGlobals = window as any;
