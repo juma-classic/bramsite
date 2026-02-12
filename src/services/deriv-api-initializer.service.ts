@@ -130,9 +130,18 @@ class DerivAPIInitializer {
     private async createAPIInstance(): Promise<APIInstance> {
         const windowAny = window as any;
 
+        // Check for stored API token
+        const storedToken = localStorage.getItem('deriv_api_token');
+
         // Method 1: Use existing api_base
         if (windowAny.api_base?.api) {
             console.log('🔧 Using existing api_base');
+
+            // If we have a token, authorize the existing connection
+            if (storedToken) {
+                this.authorizeWithToken(windowAny.api_base.api, storedToken);
+            }
+
             return windowAny.api_base.api;
         }
 
@@ -145,22 +154,49 @@ class DerivAPIInitializer {
                 lang: this.config.language,
                 brand: this.config.brand,
             });
+
+            // If we have a token, authorize the connection
+            if (storedToken) {
+                this.authorizeWithToken(api, storedToken);
+            }
+
             return api;
         }
 
         // Method 3: Create WebSocket-based API
         if (windowAny.WebSocket) {
             console.log('🔧 Creating WebSocket-based API');
-            return this.createWebSocketAPI();
+            return this.createWebSocketAPI(storedToken);
         }
 
         throw new Error('No suitable API method available');
     }
 
     /**
+     * Authorize API connection with token
+     */
+    private async authorizeWithToken(api: APIInstance, token: string): Promise<void> {
+        try {
+            console.log('🔐 Authorizing with API token...');
+            const response = await api.send({ authorize: token });
+
+            if (response.error) {
+                console.error('❌ Token authorization failed:', response.error.message);
+                localStorage.removeItem('deriv_api_token');
+                throw new Error(response.error.message);
+            }
+
+            console.log('✅ Successfully authorized with token');
+        } catch (error) {
+            console.error('❌ Token authorization error:', error);
+            localStorage.removeItem('deriv_api_token');
+        }
+    }
+
+    /**
      * Create WebSocket-based API as fallback
      */
-    private createWebSocketAPI(): APIInstance {
+    private createWebSocketAPI(token?: string | null): APIInstance {
         return {
             send: (request: any) => {
                 return new Promise((resolve, reject) => {
@@ -172,17 +208,33 @@ class DerivAPIInitializer {
                         reject(new Error('WebSocket request timeout'));
                     }, 15000);
 
+                    let isAuthorized = false;
+
                     ws.onopen = () => {
-                        ws.send(JSON.stringify(request));
+                        // If token is provided, authorize first
+                        if (token && !isAuthorized) {
+                            ws.send(JSON.stringify({ authorize: token }));
+                            isAuthorized = true;
+                        } else {
+                            ws.send(JSON.stringify(request));
+                        }
                     };
 
                     ws.onmessage = event => {
-                        clearTimeout(timeout);
                         try {
                             const response = JSON.parse(event.data);
+
+                            // If this was an authorization response, send the actual request
+                            if (response.msg_type === 'authorize' && !response.error) {
+                                ws.send(JSON.stringify(request));
+                                return;
+                            }
+
+                            clearTimeout(timeout);
                             ws.close();
                             resolve(response);
                         } catch {
+                            clearTimeout(timeout);
                             ws.close();
                             reject(new Error('Invalid JSON response'));
                         }

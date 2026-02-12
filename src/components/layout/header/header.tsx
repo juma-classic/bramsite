@@ -54,6 +54,9 @@ const AppHeader = observer(() => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [stake, setStake] = useState('');
     const [martingale, setMartingale] = useState('');
+    const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
+    const [apiToken, setApiToken] = useState('');
+    const [tokenError, setTokenError] = useState('');
 
     const handleToggle = () => {
         if (!isToggled) {
@@ -69,6 +72,26 @@ const AppHeader = observer(() => {
             setIsModalOpen(false); // Close modal
         } else {
             alert('Please enter valid Stake and Martingale values.');
+        }
+    };
+
+    const handleTokenLogin = async () => {
+        setTokenError('');
+
+        if (!apiToken.trim()) {
+            setTokenError('Please enter an API token');
+            return;
+        }
+
+        try {
+            // Store token in localStorage
+            localStorage.setItem('deriv_api_token', apiToken);
+
+            // Reload to initialize connection with token
+            window.location.reload();
+        } catch (error) {
+            setTokenError('Failed to authenticate with token');
+            console.error('Token login error:', error);
         }
     };
 
@@ -124,6 +147,9 @@ const AppHeader = observer(() => {
                         }}
                     >
                         <Localize i18n_default_text='Log in' />
+                    </Button>
+                    <Button secondary onClick={() => setIsTokenModalOpen(true)} style={{ marginLeft: '0.5rem' }}>
+                        <Localize i18n_default_text='API Token' />
                     </Button>
                     <Button
                         primary
@@ -197,6 +223,64 @@ const AppHeader = observer(() => {
                         <button onClick={handleProceed} className='proceed-button'>
                             Proceed
                         </button>
+                    </div>
+                </Modal>
+            )}
+
+            {isTokenModalOpen && (
+                <Modal
+                    is_open={isTokenModalOpen}
+                    toggleModal={() => {
+                        setIsTokenModalOpen(false);
+                        setApiToken('');
+                        setTokenError('');
+                    }}
+                    title='Login with API Token'
+                >
+                    <div className='modal-content' style={{ padding: '1rem' }}>
+                        <p style={{ marginBottom: '1rem', color: '#999' }}>
+                            Enter your Deriv API token to authenticate. You can generate tokens from your Deriv account
+                            settings.
+                        </p>
+                        <label style={{ display: 'block', marginBottom: '1rem' }}>
+                            <span style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600 }}>
+                                API Token:
+                            </span>
+                            <input
+                                type='password'
+                                value={apiToken}
+                                onChange={e => {
+                                    setApiToken(e.target.value);
+                                    setTokenError('');
+                                }}
+                                placeholder='Enter your API token'
+                                style={{
+                                    width: '100%',
+                                    padding: '0.75rem',
+                                    border: '1px solid #ccc',
+                                    borderRadius: '4px',
+                                    fontSize: '14px',
+                                }}
+                            />
+                        </label>
+                        {tokenError && (
+                            <p style={{ color: '#ff444f', marginBottom: '1rem', fontSize: '14px' }}>{tokenError}</p>
+                        )}
+                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                            <Button
+                                secondary
+                                onClick={() => {
+                                    setIsTokenModalOpen(false);
+                                    setApiToken('');
+                                    setTokenError('');
+                                }}
+                            >
+                                Cancel
+                            </Button>
+                            <Button primary onClick={handleTokenLogin}>
+                                Login
+                            </Button>
+                        </div>
                     </div>
                 </Modal>
             )}
