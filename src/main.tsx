@@ -84,8 +84,8 @@ function AppWrapper() {
                         console.warn('⚠️ API initialization failed, will retry on demand:', error);
                     });
 
-                // Minimal delay for smooth UX
-                await new Promise(resolve => setTimeout(resolve, 300));
+                // Minimum display time for loader (so users can see the branding)
+                await new Promise(resolve => setTimeout(resolve, 2500));
                 setIsLoading(false);
 
                 // Load non-critical scripts after app is ready
@@ -100,7 +100,7 @@ function AppWrapper() {
     }, []);
 
     if (isLoading) {
-        return <BramFXLoader onLoadComplete={() => setIsLoading(false)} duration={300} />;
+        return <BramFXLoader onLoadComplete={() => setIsLoading(false)} duration={2500} />;
     }
 
     return <AuthWrapper />;

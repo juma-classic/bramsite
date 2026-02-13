@@ -61,7 +61,7 @@ export const AuthWrapper = () => {
     }, [loginInfo, paramsToDelete]);
 
     if (!isAuthComplete) {
-        return <BramFXLoader onLoadComplete={() => {}} duration={2000} />;
+        return <BramFXLoader onLoadComplete={() => {}} duration={3000} />;
     }
 
     return <App />;
