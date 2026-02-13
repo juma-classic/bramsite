@@ -1,8 +1,8 @@
 {
-    "name": "TICKSHARK",
-    "short_name": "TICKSHARK",
+    "name": "BRAMFX",
+    "short_name": "BRAMFX",
     "theme_color": "#414652",
-    "description": "Trade on your finger prints.",
+    "description": "Advanced trading platform - Professional-grade automated trading tools.",
     "background_color": "#414652",
     "display": "standalone",
     "start_url": "/",

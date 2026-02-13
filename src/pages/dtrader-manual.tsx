@@ -40,18 +40,71 @@ const DTraderManual: React.FC = () => {
 
     // Mock data
     const markets: Market[] = [
-        { symbol: 'EUR/USD', name: 'Euro vs US Dollar', category: 'Forex', price: 1.0845, change: 0.0012, changePercent: 0.11 },
-        { symbol: 'GBP/USD', name: 'British Pound vs US Dollar', category: 'Forex', price: 1.2634, change: -0.0023, changePercent: -0.18 },
-        { symbol: 'USD/JPY', name: 'US Dollar vs Japanese Yen', category: 'Forex', price: 149.85, change: 0.45, changePercent: 0.30 },
-        { symbol: 'BTC/USD', name: 'Bitcoin vs US Dollar', category: 'Cryptocurrencies', price: 42350.50, change: 1250.30, changePercent: 3.04 },
-        { symbol: 'ETH/USD', name: 'Ethereum vs US Dollar', category: 'Cryptocurrencies', price: 2485.75, change: -85.25, changePercent: -3.32 },
-        { symbol: 'US30', name: 'US Wall Street 30', category: 'Indices', price: 37845.25, change: 125.80, changePercent: 0.33 },
-        { symbol: 'SPX500', name: 'US S&P 500', category: 'Indices', price: 4785.60, change: -15.40, changePercent: -0.32 },
+        {
+            symbol: 'EUR/USD',
+            name: 'Euro vs US Dollar',
+            category: 'Forex',
+            price: 1.0845,
+            change: 0.0012,
+            changePercent: 0.11,
+        },
+        {
+            symbol: 'GBP/USD',
+            name: 'British Pound vs US Dollar',
+            category: 'Forex',
+            price: 1.2634,
+            change: -0.0023,
+            changePercent: -0.18,
+        },
+        {
+            symbol: 'USD/JPY',
+            name: 'US Dollar vs Japanese Yen',
+            category: 'Forex',
+            price: 149.85,
+            change: 0.45,
+            changePercent: 0.3,
+        },
+        {
+            symbol: 'BTC/USD',
+            name: 'Bitcoin vs US Dollar',
+            category: 'Cryptocurrencies',
+            price: 42350.5,
+            change: 1250.3,
+            changePercent: 3.04,
+        },
+        {
+            symbol: 'ETH/USD',
+            name: 'Ethereum vs US Dollar',
+            category: 'Cryptocurrencies',
+            price: 2485.75,
+            change: -85.25,
+            changePercent: -3.32,
+        },
+        {
+            symbol: 'US30',
+            name: 'US Wall Street 30',
+            category: 'Indices',
+            price: 37845.25,
+            change: 125.8,
+            changePercent: 0.33,
+        },
+        {
+            symbol: 'SPX500',
+            name: 'US S&P 500',
+            category: 'Indices',
+            price: 4785.6,
+            change: -15.4,
+            changePercent: -0.32,
+        },
     ];
 
     const tradeTypes: TradeType[] = [
         { id: 'rise_fall', name: 'Rise/Fall', description: 'Predict if the price will rise or fall' },
-        { id: 'higher_lower', name: 'Higher/Lower', description: 'Predict if the price will be higher or lower than a barrier' },
+        {
+            id: 'higher_lower',
+            name: 'Higher/Lower',
+            description: 'Predict if the price will be higher or lower than a barrier',
+        },
         { id: 'touch_no_touch', name: 'Touch/No Touch', description: 'Predict if the price will touch a barrier' },
         { id: 'in_out', name: 'In/Out', description: 'Predict if the price will stay within or go outside barriers' },
     ];
@@ -85,13 +138,17 @@ const DTraderManual: React.FC = () => {
                 const volatility = 0.001; // 0.1% volatility
                 const change = (Math.random() - 0.5) * 2 * volatility * selectedMarket.price;
                 const newPrice = selectedMarket.price + change;
-                
-                setSelectedMarket(prev => prev ? {
-                    ...prev,
-                    price: newPrice,
-                    change: change,
-                    changePercent: (change / prev.price) * 100
-                } : null);
+
+                setSelectedMarket(prev =>
+                    prev
+                        ? {
+                              ...prev,
+                              price: newPrice,
+                              change: change,
+                              changePercent: (change / prev.price) * 100,
+                          }
+                        : null
+                );
             }
         }, 3000);
 
@@ -102,7 +159,7 @@ const DTraderManual: React.FC = () => {
     const calculatePayout = useCallback(() => {
         const baseMultiplier = 1.85;
         const durationMultiplier = selectedDuration.includes('t') ? 0.05 : 0.1;
-        const multiplier = baseMultiplier + (Math.random() * 0.13) + durationMultiplier;
+        const multiplier = baseMultiplier + Math.random() * 0.13 + durationMultiplier;
         return Math.round(stakeAmount * multiplier * 100) / 100;
     }, [stakeAmount, selectedDuration]);
 
@@ -129,60 +186,61 @@ const DTraderManual: React.FC = () => {
         setAccountBalance(prev => prev - stakeAmount);
 
         // Simulate P&L after some time
-        setTimeout(() => {
-            const randomOutcome = Math.random() > 0.5;
-            const pnl = randomOutcome ? newPosition.payout - newPosition.stake : -newPosition.stake;
-            
-            setPositions(prev => prev.map(pos => 
-                pos.id === newPosition.id ? { ...pos, pnl } : pos
-            ));
+        setTimeout(
+            () => {
+                const randomOutcome = Math.random() > 0.5;
+                const pnl = randomOutcome ? newPosition.payout - newPosition.stake : -newPosition.stake;
 
-            if (randomOutcome) {
-                setAccountBalance(prev => prev + newPosition.payout);
-            }
-        }, 5000 + Math.random() * 10000); // 5-15 seconds
+                setPositions(prev => prev.map(pos => (pos.id === newPosition.id ? { ...pos, pnl } : pos)));
+
+                if (randomOutcome) {
+                    setAccountBalance(prev => prev + newPosition.payout);
+                }
+            },
+            5000 + Math.random() * 10000
+        ); // 5-15 seconds
     };
 
     // Group markets by category
-    const marketsByCategory = markets.reduce((acc, market) => {
-        if (!acc[market.category]) {
-            acc[market.category] = [];
-        }
-        acc[market.category].push(market);
-        return acc;
-    }, {} as Record<string, Market[]>);
+    const marketsByCategory = markets.reduce(
+        (acc, market) => {
+            if (!acc[market.category]) {
+                acc[market.category] = [];
+            }
+            acc[market.category].push(market);
+            return acc;
+        },
+        {} as Record<string, Market[]>
+    );
 
     return (
-        <div className="dtrader-manual">
+        <div className='dtrader-manual'>
             {/* Header */}
-            <header className="dtrader-header">
-                <div className="header-left">
-                    <div className="logo">
-                        <span className="logo-text">Trader Master</span>
+            <header className='dtrader-header'>
+                <div className='header-left'>
+                    <div className='logo'>
+                        <span className='logo-text'>BRAMFX</span>
                     </div>
                 </div>
-                <div className="header-right">
-                    <div className="account-info">
-                        <span className="balance">${accountBalance.toLocaleString()}</span>
-                        <span className="demo-badge">DEMO</span>
+                <div className='header-right'>
+                    <div className='account-info'>
+                        <span className='balance'>${accountBalance.toLocaleString()}</span>
+                        <span className='demo-badge'>DEMO</span>
                     </div>
                 </div>
             </header>
 
-            <div className="dtrader-content">
+            <div className='dtrader-content'>
                 {/* Sidebar */}
                 <aside className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
-                    <button 
-                        className="sidebar-toggle"
-                        onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                    >
+                    <button className='sidebar-toggle' onClick={() => setSidebarCollapsed(!sidebarCollapsed)}>
                         ☰
                     </button>
-                    
-                    <div className="markets-section">
+
+                    <div className='markets-section'>
                         <h3>Markets</h3>
                         {Object.entries(marketsByCategory).map(([category, categoryMarkets]) => (
-                            <div key={category} className="market-category">
+                            <div key={category} className='market-category'>
                                 <h4>{category}</h4>
                                 {categoryMarkets.map(market => (
                                     <div
@@ -190,11 +248,14 @@ const DTraderManual: React.FC = () => {
                                         className={`market-item ${selectedMarket?.symbol === market.symbol ? 'active' : ''}`}
                                         onClick={() => handleMarketSelect(market)}
                                     >
-                                        <div className="market-symbol">{market.symbol}</div>
-                                        <div className="market-price">
-                                            <span className="price">{market.price.toFixed(market.symbol.includes('JPY') ? 2 : 4)}</span>
+                                        <div className='market-symbol'>{market.symbol}</div>
+                                        <div className='market-price'>
+                                            <span className='price'>
+                                                {market.price.toFixed(market.symbol.includes('JPY') ? 2 : 4)}
+                                            </span>
                                             <span className={`change ${market.change >= 0 ? 'positive' : 'negative'}`}>
-                                                {market.change >= 0 ? '+' : ''}{market.changePercent.toFixed(2)}%
+                                                {market.change >= 0 ? '+' : ''}
+                                                {market.changePercent.toFixed(2)}%
                                             </span>
                                         </div>
                                     </div>
@@ -203,40 +264,43 @@ const DTraderManual: React.FC = () => {
                         ))}
                     </div>
 
-                    <div className="settings-section">
+                    <div className='settings-section'>
                         <h3>Settings</h3>
-                        <label className="setting-item">
-                            <input type="checkbox" />
+                        <label className='setting-item'>
+                            <input type='checkbox' />
                             <span>Price alerts</span>
                         </label>
-                        <label className="setting-item">
-                            <input type="checkbox" />
+                        <label className='setting-item'>
+                            <input type='checkbox' />
                             <span>Sound notifications</span>
                         </label>
-                        <label className="setting-item">
-                            <input type="checkbox" defaultChecked />
+                        <label className='setting-item'>
+                            <input type='checkbox' defaultChecked />
                             <span>Auto-refresh</span>
                         </label>
                     </div>
                 </aside>
 
                 {/* Main Content */}
-                <main className="main-content">
+                <main className='main-content'>
                     {/* Chart Area */}
-                    <div className="chart-area">
-                        <div className="chart-header">
-                            <div className="symbol-info">
+                    <div className='chart-area'>
+                        <div className='chart-header'>
+                            <div className='symbol-info'>
                                 <h2>{selectedMarket?.symbol}</h2>
-                                <div className="price-info">
-                                    <span className="current-price">
+                                <div className='price-info'>
+                                    <span className='current-price'>
                                         {selectedMarket?.price.toFixed(selectedMarket.symbol.includes('JPY') ? 2 : 4)}
                                     </span>
-                                    <span className={`price-change ${(selectedMarket?.change || 0) >= 0 ? 'positive' : 'negative'}`}>
-                                        {(selectedMarket?.change || 0) >= 0 ? '+' : ''}{selectedMarket?.changePercent.toFixed(2)}%
+                                    <span
+                                        className={`price-change ${(selectedMarket?.change || 0) >= 0 ? 'positive' : 'negative'}`}
+                                    >
+                                        {(selectedMarket?.change || 0) >= 0 ? '+' : ''}
+                                        {selectedMarket?.changePercent.toFixed(2)}%
                                     </span>
                                 </div>
                             </div>
-                            <div className="timeframe-buttons">
+                            <div className='timeframe-buttons'>
                                 {timeframes.map(tf => (
                                     <button
                                         key={tf}
@@ -248,13 +312,16 @@ const DTraderManual: React.FC = () => {
                                 ))}
                             </div>
                         </div>
-                        <div className="chart-container">
-                            <div className="chart-placeholder">
-                                <div className="chart-grid"></div>
-                                <div className="chart-message">
+                        <div className='chart-container'>
+                            <div className='chart-placeholder'>
+                                <div className='chart-grid'></div>
+                                <div className='chart-message'>
                                     Chart for {selectedMarket?.symbol} - {selectedTimeframe}
                                     <br />
-                                    <small>Real-time price: {selectedMarket?.price.toFixed(selectedMarket.symbol.includes('JPY') ? 2 : 4)}</small>
+                                    <small>
+                                        Real-time price:{' '}
+                                        {selectedMarket?.price.toFixed(selectedMarket.symbol.includes('JPY') ? 2 : 4)}
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -262,12 +329,12 @@ const DTraderManual: React.FC = () => {
                 </main>
 
                 {/* Trade Panel */}
-                <aside className="trade-panel">
-                    <div className="trade-section">
+                <aside className='trade-panel'>
+                    <div className='trade-section'>
                         <h3>Trade</h3>
-                        
+
                         {/* Trade Type Selection */}
-                        <div className="trade-types">
+                        <div className='trade-types'>
                             {tradeTypes.map(type => (
                                 <button
                                     key={type.id}
@@ -281,11 +348,11 @@ const DTraderManual: React.FC = () => {
                         </div>
 
                         {/* Market Selection */}
-                        <div className="form-group">
+                        <div className='form-group'>
                             <label>Market</label>
-                            <select 
+                            <select
                                 value={selectedMarket?.symbol || ''}
-                                onChange={(e) => {
+                                onChange={e => {
                                     const market = markets.find(m => m.symbol === e.target.value);
                                     if (market) setSelectedMarket(market);
                                 }}
@@ -299,12 +366,9 @@ const DTraderManual: React.FC = () => {
                         </div>
 
                         {/* Duration Selection */}
-                        <div className="form-group">
+                        <div className='form-group'>
                             <label>Duration</label>
-                            <select 
-                                value={selectedDuration}
-                                onChange={(e) => setSelectedDuration(e.target.value)}
-                            >
+                            <select value={selectedDuration} onChange={e => setSelectedDuration(e.target.value)}>
                                 {durations.map(duration => (
                                     <option key={duration.value} value={duration.value}>
                                         {duration.label}
@@ -314,43 +378,43 @@ const DTraderManual: React.FC = () => {
                         </div>
 
                         {/* Stake Amount */}
-                        <div className="form-group">
+                        <div className='form-group'>
                             <label>Stake</label>
-                            <div className="stake-input">
-                                <span className="currency">$</span>
+                            <div className='stake-input'>
+                                <span className='currency'>$</span>
                                 <input
-                                    type="number"
-                                    min="1"
-                                    max="1000"
+                                    type='number'
+                                    min='1'
+                                    max='1000'
                                     value={stakeAmount}
-                                    onChange={(e) => setStakeAmount(Number(e.target.value))}
+                                    onChange={e => setStakeAmount(Number(e.target.value))}
                                 />
                             </div>
                         </div>
 
                         {/* Payout Display */}
-                        <div className="payout-info">
-                            <div className="payout-row">
+                        <div className='payout-info'>
+                            <div className='payout-row'>
                                 <span>Payout:</span>
-                                <span className="payout-amount">${calculatePayout()}</span>
+                                <span className='payout-amount'>${calculatePayout()}</span>
                             </div>
-                            <div className="payout-row">
+                            <div className='payout-row'>
                                 <span>Profit:</span>
-                                <span className="profit-amount">${(calculatePayout() - stakeAmount).toFixed(2)}</span>
+                                <span className='profit-amount'>${(calculatePayout() - stakeAmount).toFixed(2)}</span>
                             </div>
                         </div>
 
                         {/* Purchase Buttons */}
-                        <div className="purchase-buttons">
+                        <div className='purchase-buttons'>
                             <button
-                                className="purchase-btn higher"
+                                className='purchase-btn higher'
                                 onClick={() => handlePurchase('HIGHER')}
                                 disabled={stakeAmount > accountBalance}
                             >
                                 HIGHER
                             </button>
                             <button
-                                className="purchase-btn lower"
+                                className='purchase-btn lower'
                                 onClick={() => handlePurchase('LOWER')}
                                 disabled={stakeAmount > accountBalance}
                             >
@@ -362,26 +426,24 @@ const DTraderManual: React.FC = () => {
             </div>
 
             {/* Positions Panel */}
-            <div className="positions-panel">
+            <div className='positions-panel'>
                 <h3>Open Positions ({positions.length})</h3>
-                <div className="positions-list">
+                <div className='positions-list'>
                     {positions.length === 0 ? (
-                        <div className="no-positions">No open positions</div>
+                        <div className='no-positions'>No open positions</div>
                     ) : (
                         positions.map(position => (
-                            <div key={position.id} className="position-item">
-                                <div className="position-symbol">{position.symbol}</div>
+                            <div key={position.id} className='position-item'>
+                                <div className='position-symbol'>{position.symbol}</div>
                                 <div className={`position-direction ${position.direction.toLowerCase()}`}>
                                     {position.direction}
                                 </div>
-                                <div className="position-stake">${position.stake}</div>
-                                <div className="position-payout">${position.payout}</div>
+                                <div className='position-stake'>${position.stake}</div>
+                                <div className='position-payout'>${position.payout}</div>
                                 <div className={`position-pnl ${position.pnl >= 0 ? 'profit' : 'loss'}`}>
                                     {position.pnl === 0 ? 'Pending' : `$${position.pnl.toFixed(2)}`}
                                 </div>
-                                <div className="position-time">
-                                    {position.openTime.toLocaleTimeString()}
-                                </div>
+                                <div className='position-time'>{position.openTime.toLocaleTimeString()}</div>
                             </div>
                         ))
                     )}
